@@ -510,6 +510,7 @@ def main():
                         style('.donnees-graphique thead th').backgroundColor, style('.donnees-graphique thead th').color];
             }""")
             verifier(couleurs == ["rgb(0, 0, 0)", "rgb(0, 0, 0)", "rgb(255, 192, 0)", "rgb(0, 0, 0)"], f"couleurs du HUB : {couleurs}")
+            verifier(page.locator(".entete a").count() == 0, "logo ou titre cliquable dans l'en-tête")
             lien_hub = page.locator(".pied a", has_text="HUB Bas Carbone")
             verifier(lien_hub.get_attribute("href") == "https://www.ifpeb.fr/travaux/le-hub-des-prescripteurs-bas-carbone/", "lien du HUB dans le pied de page")
             champ = page.locator("[data-graphique=contributeurs] .parametre-graphique input")

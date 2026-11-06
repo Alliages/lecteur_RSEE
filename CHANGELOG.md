@@ -1,5 +1,12 @@
 # CHANGELOG — lecteur_RSEE
 
+## 0.9.1 — 2026-11-06
+
+- En-tête : un clic sur le logo ou sur « lecteur.RSEE » ne fait plus rien (il rechargeait la
+  page et fermait le RSEE ouvert).
+- Graphiques du HUB : logo agrandi (86 px de haut) et placé devant le graphique.
+- Test : aucun lien dans l'en-tête.
+
 ## 0.9.0 — 2026-11-06
 
 - Composants : quand tous les lots valent 0 dans le RSEE (6 RSEE de test sur 14), l'Ic par lot
