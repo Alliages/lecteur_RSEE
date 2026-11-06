@@ -1,0 +1,23 @@
+﻿champ;code;libelle;statut;indice
+type_donnees;1;FDES;déduit;fiches produits nommées (plaques de plâtre, fenêtres, canalisations…)
+type_donnees;2;PEP;déduit;équipements électriques et CVC (bouches, ascenseurs, thermostats)
+type_donnees;3;Donnée par défaut (DED);déduit;noms « DONNEE ENVIRONNEMENTALE PAR DEFAUT »
+type_donnees;5;Donnée conventionnelle;déduit;noms « DONNEE ENVIRONNEMENTALE CONVENTIONNELLE » (fluides frigorigènes)
+type_donnees;6;Lot ou sous-lot forfaitaire;déduit;noms « [RE2020] Lot forfaitaire » / « Sous-lot forfaitaire »
+type_donnees;7;Fiche configurée;déduit;présence de donnees_configurateur (bétons)
+type_donnees;10;Réemploi;déduit;nom « … - Réemploi »
+unite_uf;1;m³;déduit;bétons configurés « un mètre cube », épaisseur 1 m
+unite_uf;2;m²;déduit;lots forfaitaires (quantité = Sref), plaques, étanchéités
+unite_uf;3;kg;déduit;armatures, fluides frigorigènes
+unite_uf;4;m³;déduit;eau potable et assainissement, béton armé, bois lamellé-collé
+unite_uf;5;m (linéaire);déduit;canalisations, descentes d'eaux pluviales, ossatures
+unite_uf;7;kWh;déduit;« Mise à disposition d'un kWh d'électricité »
+unite_uf;11;m (linéaire);déduit;calorifuges, conduits, gaines, plinthes, seuils (code linéaire distinct du 5)
+unite_uf;13;unité;déduit;vannes, clapets, regards, râteliers
+usage;1;Maison individuelle ou accolée;déduit;logements de fonction (4 occupants)
+usage;2;Logement collectif;déduit;immeubles de logements
+usage;3;Bureaux;déduit;immeubles de bureaux
+contributeur;composant;Composants;balise;
+contributeur;energie;Énergie;balise;
+contributeur;eau;Eau;balise;
+contributeur;chantier;Chantier;balise;

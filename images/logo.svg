@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 228" role="img" aria-label="Lecteur RSEE">
+  <!-- Logo lecteur_RSEE : fichier XML « autocollant », atome de carbone autour d'un bâtiment.
+       Couleurs : Velvet Orchid #542e71, Bright Gold #ffda33.
+       Texte « RSEE » converti en tracés (police Inter Black, licence SIL OFL). -->
+
+  <!-- Liseré gris extérieur (effet autocollant) -->
+  <path d="M40 20 H128 L170 62 V204 H40 Z" fill="none" stroke="#e4e2e6" stroke-width="22" stroke-linejoin="round"/>
+  <rect x="24" y="142" width="162" height="46" rx="4" fill="none" stroke="#e4e2e6" stroke-width="22" stroke-linejoin="round"/>
+
+  <!-- Feuille et coin plié -->
+  <path d="M40 20 H128 L170 62 V204 H40 Z" fill="#542e71" stroke="#fff" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M128 20 V62 H170 Z" fill="#542e71" stroke="#fff" stroke-width="8" stroke-linejoin="round"/>
+
+  <!-- Bandeau « RSEE » -->
+  <rect x="24" y="142" width="162" height="46" rx="4" fill="#ffda33" stroke="#fff" stroke-width="9"/>
+  <path fill="#15131c" d="M58.58 177H65.29V168.83H67.61L71.96 177H79.27L74.22 167.77C76.86 166.51 78.44 164.1 78.44 160.66C78.44 155.42 74.75 152.26 69.24 152.26H58.58ZM65.29 163.62V157.64H67.65C70.02 157.64 71.43 158.56 71.43 160.66C71.43 162.79 70.02 163.62 67.65 163.62ZM94.35 177.3C100.61 177.3 104.38 174.59 104.38 169.7C104.38 165.94 102.11 163.29 96.64 162.12L94.62 161.69C92.28 161.2 91.3 160.51 91.3 159.34C91.3 158.24 92.21 157.44 94.29 157.44C96.46 157.44 97.49 158.39 97.61 160H104.05C104.01 155.15 100.28 151.93 94.29 151.93C88.41 151.93 84.29 155.1 84.29 159.8C84.29 163.67 86.96 165.84 91.33 166.77L93.82 167.3C96.56 167.89 97.54 168.58 97.54 169.7C97.54 170.92 96.39 171.79 94.25 171.79C91.66 171.79 90.15 170.58 90.04 168.3H83.66C83.69 174.51 87.89 177.3 94.35 177.3ZM109.94 177H127.7V171.59H116.64V167.14H126.84V161.86H116.64V157.68H127.77V152.26H109.94ZM133.77 177H151.54V171.59H140.48V167.14H150.67V161.86H140.48V157.68H151.6V152.26H133.77Z"/>
+
+  <!-- Atome de carbone : hexagone et sommets dorés -->
+  <path d="M100 54 L134 73 V111 L100 130 L66 111 V73 Z" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round"/>
+  <g fill="#ffda33">
+    <circle cx="100" cy="54" r="6.5"/><circle cx="134" cy="73" r="6.5"/><circle cx="134" cy="111" r="6.5"/>
+    <circle cx="100" cy="130" r="6.5"/><circle cx="66" cy="111" r="6.5"/><circle cx="66" cy="73" r="6.5"/>
+  </g>
+
+  <!-- Bâtiment : immeuble, bâtiment bas, sol -->
+  <path d="M84 110 V80 H101 V110 M101 110 V92 H117 V110 M78 110 H122" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

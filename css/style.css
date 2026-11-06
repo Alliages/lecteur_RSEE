@@ -1,0 +1,955 @@
+/* =====================================================================
+   lecteur_RSEE — feuille de style
+   Style « rétro » : contours noirs épais, coins arrondis, ombres pleines
+   décalées, titres en serif gras italique.
+   Réglages (palette, épaisseurs, rayons, polices) : variables ci-dessous.
+   ===================================================================== */
+
+:root {
+  /* --- Palette du projet --- */
+  --or-vif: #ffda33;          /* Bright Gold */
+  --bleu-acier: #84a9c0;      /* Steel Blue */
+  --raisin: #6a66a3;          /* Dusty Grape */
+  --orchidee: #542e71;        /* Velvet Orchid */
+  --corail: #ed6a5a;          /* Vibrant Coral (accent principal) */
+  --survol-hub: #ffc000;      /* onglet Graphiques du HUB, survolé ou actif (jaune réservé à cet onglet) */
+  --orange-risque: #ff8c1a;   /* marge sous le seuil < 5 % */
+
+  /* --- Neutres --- */
+  --encre: #15131c;           /* contours et texte principal */
+  --texte-doux: #5d5a69;      /* texte secondaire */
+  --fond: #ececec;            /* fond de page */
+  --carte: #ffffff;           /* fond des cartes */
+  --pastille: #ececf1;        /* fond des pastilles (badges) */
+
+  /* --- Géométrie rétro --- */
+  --trait: 2.5px;             /* contour standard */
+  --trait-fort: 3.5px;        /* contour de l'élément sélectionné */
+  --ombre: 0 5px 0 var(--encre);
+  --rayon: 22px;
+  --rayon-petit: 10px;
+
+  /* --- Arborescence --- */
+  --retrait-arbre: 34px;      /* retrait des zones sous leur bâtiment (le trait se loge dedans) */
+  --trait-arbre: var(--raisin); /* trait bâtiment-zones et cadre du groupe */
+  --fond-groupe: #e9e8f2;     /* fond du cadre bâtiment + zones */
+
+  /* --- Polices (polices système : rien n'est téléchargé) --- */
+  --police-titre: "Cooper Black", "Rockwell Extra Bold", "Rockwell", Georgia, serif;
+  --police-texte: "Nunito", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font-family: var(--police-texte);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+button { font: inherit; color: inherit; }
+
+/* Fenêtre principale arrondie à gros contour */
+.cadre {
+  max-width: 1280px;
+  margin: 24px auto;
+  background: var(--fond);
+  border: var(--trait-fort) solid var(--encre);
+  border-radius: 34px;
+  overflow: hidden;
+}
+
+/* ---------- En-tête ---------- */
+.entete {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 28px;
+  background: var(--carte);
+  border-bottom: var(--trait-fort) solid var(--encre);
+  flex-wrap: wrap;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--encre);
+  text-decoration: none;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-weight: 900;
+  font-size: 30px;
+  letter-spacing: -0.5px;
+}
+.logo-marque { width: 54px; height: auto; flex: none; }
+.logo .point { color: var(--corail); }
+.logo .accent { color: var(--orchidee); }
+
+.onglets { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.onglet {
+  border: var(--trait) solid transparent;
+  background: none;
+  border-radius: 999px;
+  padding: 6px 18px;
+  font-size: 17px;
+  cursor: pointer;
+}
+.onglet[aria-current="page"] {
+  border-color: var(--encre);
+  background: var(--orchidee);
+  color: #fff;
+  font-weight: 700;
+}
+.onglet:disabled { color: var(--texte-doux); cursor: not-allowed; opacity: 0.7; }
+/* Survol : une couleur de l'application par onglet ; l'onglet actif garde son fond */
+.onglet[data-onglet="synthese"]:not([aria-current]):hover { background: var(--corail); }
+.onglet[data-onglet="informations"]:not([aria-current]):hover { background: var(--bleu-acier); }
+.onglet[data-onglet="indicateurs"]:not([aria-current]):hover { background: var(--raisin); color: #fff; }
+.onglet[data-onglet="composants"]:not([aria-current]):hover { background: var(--orchidee); color: #fff; }
+.onglet[data-onglet="graphiques"]:hover,
+.onglet[data-onglet="graphiques"][aria-current="page"] { background: var(--survol-hub); color: var(--encre); }
+
+.version {
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--or-vif);
+  border: 2px solid var(--encre);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+/* ---------- Contenu ---------- */
+.contenu { padding: 28px; }
+
+/* Barre d'import : zone de dépôt + bouton */
+.import { display: flex; gap: 20px; align-items: stretch; flex-wrap: wrap; }
+
+.zone-depot {
+  flex: 1 1 420px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 10px 22px;
+  background: var(--carte);
+  border: var(--trait) solid var(--encre);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre);
+  color: var(--texte-doux);
+}
+.zone-depot svg { flex: none; width: 26px; height: 26px; color: var(--encre); }
+.zone-depot.survol { background: #fff7cc; border-style: dashed; color: var(--encre); }
+.zone-depot .nom-fichier { color: var(--encre); font-weight: 700; word-break: break-all; }
+
+.bouton-principal {
+  flex: 0 0 auto;
+  min-width: 260px;
+  min-height: 64px;
+  padding: 0 28px;
+  background: var(--corail);
+  color: #fff;
+  border: var(--trait) solid var(--encre);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre);
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-weight: 900;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.bouton-principal:hover { transform: translateY(-1px); }
+.bouton-principal:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--encre); }
+
+:focus-visible { outline: 3px solid var(--raisin); outline-offset: 3px; }
+
+.info-fichier { margin: 18px 4px 0; color: var(--texte-doux); }
+.info-fichier strong { color: var(--encre); }
+
+/* Message d'erreur à l'import */
+.message {
+  margin-top: 18px;
+  padding: 14px 20px;
+  background: #fde4e0;
+  border: var(--trait) solid var(--encre);
+  border-left: 12px solid var(--corail);
+  border-radius: var(--rayon-petit);
+  font-weight: 600;
+}
+.message[hidden] { display: none; }
+
+/* ---------- Colonnes : arborescence | détail ---------- */
+.colonnes {
+  display: grid;
+  grid-template-columns: minmax(300px, 5fr) 7fr;
+  gap: 28px;
+  margin-top: 26px;
+  align-items: start;
+}
+/* Les colonnes ne s'élargissent pas au contenu (le tableau défile dans son cadre) */
+.colonnes > section { min-width: 0; }
+
+.titre-colonne {
+  margin: 0 0 14px 4px;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--orchidee);
+}
+
+/* Arborescence : liste de cartes */
+.arbre { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.arbre ul { list-style: none; margin: 14px 0 0 var(--retrait-arbre); padding: 0; display: grid; gap: 12px; }
+
+/* Cadre d'un bâtiment et de ses zones. isolation : les traits (z-index négatif)
+   passent sous les cartes et leur ombre, mais au-dessus du fond du cadre. */
+.groupe-batiment {
+  isolation: isolate;
+  padding: 10px 10px 14px;
+  background: var(--fond-groupe);
+  border: var(--trait) solid var(--trait-arbre);
+  border-radius: calc(var(--rayon) + 8px);
+}
+
+/* Traits de l'arborescence : ::before descend du haut de la zone (ou du bâtiment)
+   et tourne vers la carte ; ::after prolonge la verticale vers la zone suivante,
+   sauf sur la dernière, où le trait s'arrête au coude. */
+.arbre ul > li { position: relative; }
+.arbre ul > li::before,
+.arbre ul > li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  box-sizing: border-box;
+  left: calc(var(--retrait-arbre) / -2);
+  border-left: var(--trait) solid var(--trait-arbre);
+}
+.arbre ul > li::before {
+  top: -16px; /* franchit l'espace au-dessus de la carte (14 px sous le bâtiment, 12 px entre zones) */
+  height: calc(50% + 16px);
+  width: calc(var(--retrait-arbre) / 2);
+  border-bottom: var(--trait) solid var(--trait-arbre);
+  border-bottom-left-radius: var(--rayon-petit);
+}
+.arbre ul > li:not(:last-child)::after { top: 0; bottom: 0; }
+
+.noeud {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  text-align: left;
+  padding: 16px 18px;
+  background: var(--carte);
+  border: var(--trait) solid #c9c8cf;
+  border-radius: var(--rayon);
+  cursor: pointer;
+}
+.noeud:hover { border-color: var(--encre); }
+.noeud[aria-current="true"] {
+  border: var(--trait-fort) solid var(--encre);
+  box-shadow: 0 5px 0 var(--orchidee);
+}
+.noeud .titre { font-weight: 700; font-size: 17px; display: block; }
+.noeud .sous-titre { color: var(--texte-doux); font-size: 14px; display: block; }
+.noeud .pastilles { margin-top: 8px; }
+.noeud.petit { padding: 12px 16px; }
+.noeud.petit .titre { font-size: 15px; }
+
+/* Pastille ronde colorée portant l'icône du type de nœud */
+.pastille-icone {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+.petit .pastille-icone { width: 40px; height: 40px; }
+.pastille-icone svg { width: 55%; height: 55%; }
+.fond-corail { background: var(--corail); }
+.fond-raisin { background: var(--raisin); }
+.fond-acier { background: var(--bleu-acier); }
+.fond-or { background: var(--or-vif); color: var(--encre); }
+.fond-orchidee { background: var(--orchidee); }
+
+/* Badges gris */
+.pastilles { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge {
+  background: var(--pastille);
+  border-radius: 8px;
+  padding: 3px 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ---------- Panneau de détail ---------- */
+.carte {
+  background: var(--carte);
+  border: var(--trait) solid var(--encre);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre);
+  padding: 30px;
+}
+.carte + .carte { margin-top: 26px; }
+
+.entete-detail { text-align: center; }
+.entete-detail .pastille-icone { width: 110px; height: 110px; margin: 0 auto 16px; }
+.entete-detail h2 { margin: 0; font-size: 26px; color: var(--orchidee); }
+.entete-detail .sous-titre { color: var(--texte-doux); margin: 6px 0 16px; }
+.entete-detail .pastilles { justify-content: center; }
+
+/* Tuiles de valeurs (icône carrée + libellé + valeur) */
+.tuiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 22px 28px;
+  margin: 30px 8px 0;
+}
+.tuile { display: flex; align-items: center; gap: 14px; }
+.tuile .carre {
+  flex: none;
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+.tuile .carre svg { width: 28px; height: 28px; }
+.tuile .libelle { font-size: 14px; color: var(--texte-doux); display: block; }
+.tuile .valeur { font-size: 22px; font-weight: 600; display: block; }
+.tuile .valeur.absent { color: var(--texte-doux); font-weight: 400; font-size: 17px; }
+
+.carte h3 { margin: 0 0 12px; font-size: 20px; color: var(--orchidee); }
+.liste-alertes { margin: 0; padding-left: 20px; }
+.liste-alertes li + li { margin-top: 6px; }
+.ok { color: var(--texte-doux); margin: 0; }
+
+/* État vide */
+.vide { text-align: center; color: var(--texte-doux); }
+.vide .pastille-icone { margin: 0 auto 14px; width: 90px; height: 90px; }
+.vide h2 { color: var(--encre); margin: 0 0 8px; font-family: var(--police-titre); font-style: italic; }
+
+/* ---------- Onglet Indicateurs ---------- */
+
+/* Bandeau de verdict */
+.verdict {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 24px;
+  background: var(--orchidee);
+  color: #fff;
+  border: var(--trait) solid var(--encre);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre);
+}
+.verdict-symbole {
+  flex: none;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  font-weight: 900;
+  border: var(--trait) solid var(--encre);
+}
+.verdict-conforme .verdict-symbole { background: var(--bleu-acier); color: var(--encre); }
+.verdict-depasse .verdict-symbole { background: var(--corail); color: var(--encre); }
+.verdict-alerte .verdict-symbole { background: var(--or-vif); color: var(--encre); }
+.verdict-forte .verdict-symbole { background: var(--orange-risque); color: var(--encre); }
+.verdict-titre { margin: 0; font-family: var(--police-titre); font-style: italic; font-size: 22px; }
+.verdict-message { margin: 4px 0 0; }
+.verdict-risque { margin: 4px 0 0; font-weight: 700; }
+
+.bloc-indicateurs { margin-top: 28px; }
+.titre-bloc {
+  margin: 0 0 14px 4px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--orchidee);
+}
+
+.note { margin: 8px 0 0; font-size: 14px; color: var(--texte-doux); }
+.note-encadree {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border-left: 6px solid var(--orchidee);
+  background: var(--carte);
+  border-radius: var(--rayon-petit);
+}
+
+/* Pastilles de statut : symbole + texte (jamais la couleur seule) */
+.statut {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 12px;
+  border: 2px solid var(--encre);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.statut .symbole { font-weight: 900; }
+.statut-conforme { background: var(--bleu-acier); }
+.statut-depasse { background: var(--corail); }
+.statut-absent { background: var(--pastille); color: var(--texte-doux); }
+
+/* Cartes d'exigence */
+.exigences { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.exigence {
+  background: var(--carte);
+  border: var(--trait) solid var(--encre);
+  border-radius: var(--rayon);
+  padding: 18px 20px;
+}
+.exigence.niveau-alerte { border-color: var(--or-vif); box-shadow: inset 0 0 0 2px var(--or-vif); }
+.exigence.niveau-forte { border-color: var(--orange-risque); box-shadow: inset 0 0 0 2px var(--orange-risque); }
+.exigence.niveau-depasse { border-color: var(--corail); box-shadow: inset 0 0 0 2px var(--corail); }
+.risque-exigence { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; font-size: 14px; font-weight: 700; }
+.tete-exigence { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.tete-exigence h4 { margin: 0; font-size: 18px; color: var(--orchidee); }
+.tete-exigence .source {
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--texte-doux);
+  border: 1.5px solid currentColor;
+  border-radius: 6px;
+  padding: 0 5px;
+  vertical-align: middle;
+}
+.chiffres { margin-top: 10px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.valeur-exigence { font-size: 30px; font-weight: 800; }
+.chiffres .unite { color: var(--texte-doux); }
+.seuil-texte { margin: 2px 0 0; font-weight: 600; }
+.ecart { margin: 8px 0 0; font-weight: 700; font-size: 14px; }
+.ecart-depasse { color: #b3362a; }
+.ecart-conforme { color: var(--orchidee); }
+
+/* Jauge : barre de la valeur, repère vertical du seuil */
+.jauge {
+  position: relative;
+  height: 16px;
+  margin-top: 10px;
+  background: var(--pastille);
+  border: 2px solid var(--encre);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.remplissage { height: 100%; }
+.remplissage-conforme { background: var(--bleu-acier); }
+.remplissage-alerte { background: var(--or-vif); }
+.remplissage-forte { background: var(--orange-risque); }
+.remplissage-depasse { background: var(--corail); }
+.repere-seuil {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 4px;
+  margin-left: -2px;
+  background: var(--orchidee);
+}
+
+/* DH : une ligne par groupe */
+.groupes-dh { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 14px; }
+.ligne-groupe { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.nom-groupe { font-weight: 700; flex: 1 1 140px; }
+.valeur-groupe { font-variant-numeric: tabular-nums; }
+.badge-alerte { display: inline-block; margin-top: 6px; background: #fff3c2; border: 1.5px solid var(--or-vif); }
+
+/* Indicateurs pédagogiques */
+.pedagogiques { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+.indicateur {
+  background: var(--carte);
+  border: 2px solid #c9c8cf;
+  border-top: 6px solid var(--orchidee);
+  border-radius: var(--rayon-petit);
+  padding: 12px 14px;
+}
+.indicateur .libelle { display: block; font-size: 13px; color: var(--texte-doux); }
+.indicateur .valeur { display: block; font-size: 20px; font-weight: 700; }
+.indicateur .valeur.absent { font-size: 15px; font-weight: 400; color: var(--texte-doux); }
+.indicateur .occupant { display: block; font-size: 13px; color: var(--orchidee); }
+
+/* Tableau de synthèse du projet */
+.defilement { overflow-x: auto; border: var(--trait) solid var(--encre); border-radius: var(--rayon); background: var(--carte); }
+.synthese { width: 100%; border-collapse: collapse; font-size: 14px; }
+.synthese thead th {
+  background: var(--orchidee);
+  color: #fff;
+  text-align: left;
+  padding: 12px 8px;
+  vertical-align: bottom;
+}
+.synthese tbody th { text-align: left; padding: 12px 8px 12px 14px; min-width: 110px; }
+.synthese thead th:first-child { padding-left: 14px; }
+.synthese td { padding: 10px 8px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.synthese td, .synthese th { vertical-align: middle; }
+.chiffres-cellule { display: inline-flex; flex-direction: column; vertical-align: middle; line-height: 1.2; }
+.synthese tbody tr + tr { border-top: 1.5px solid #dcdbe2; }
+.valeur-cellule { font-weight: 700; }
+.seuil-cellule { font-size: 12px; color: var(--texte-doux); }
+
+/* ---------- Onglet Informations ---------- */
+
+/* Vue large (Composants) : colonne d'arborescence réduite */
+.colonnes.vue-large { grid-template-columns: minmax(250px, 3fr) 9fr; }
+
+.carte-infos { padding: 24px 26px; }
+.infos {
+  display: grid;
+  grid-template-columns: minmax(150px, max-content) 1fr;
+  gap: 8px 22px;
+  margin: 0;
+}
+.infos dt { color: var(--texte-doux); font-size: 14px; }
+.infos dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.infos dd.absent { color: var(--texte-doux); font-weight: 400; }
+.colonnes-infos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px 30px; }
+.sous-titre-infos { margin: 0 0 10px; font-size: 16px; color: var(--orchidee); }
+
+/* Code affiché après son libellé */
+.valeur-codee .code {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--texte-doux);
+  border: 1.5px solid #c9c8cf;
+  border-radius: 6px;
+  padding: 0 5px;
+  white-space: nowrap;
+}
+.valeur-codee[title] { text-decoration: underline dotted var(--raisin); text-underline-offset: 3px; }
+
+/* Acteurs */
+.grille-acteurs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.acteur {
+  border: 2px solid #c9c8cf;
+  border-left: 6px solid var(--orchidee);
+  border-radius: var(--rayon-petit);
+  padding: 12px 14px;
+}
+.acteur p { margin: 0; }
+.acteur .role { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--orchidee); }
+.acteur .nom-acteur { font-weight: 700; margin-top: 2px; }
+.acteur .detail-acteur { font-size: 13px; color: var(--texte-doux); }
+
+/* Tableaux génériques (zones, lots, composants) */
+.tableau { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tableau thead th {
+  background: var(--orchidee);
+  color: #fff;
+  text-align: left;
+  padding: 10px 10px;
+  vertical-align: bottom;
+  position: sticky;
+  top: 0;
+}
+.tableau tbody th { text-align: left; font-weight: 700; }
+.tableau td, .tableau tbody th { padding: 8px 10px; vertical-align: top; }
+.tableau tbody tr + tr { border-top: 1.5px solid #e3e2e8; }
+.tableau .nombre { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tableau .ref {
+  display: inline-block;
+  min-width: 2.2em;
+  font-weight: 800;
+  color: var(--orchidee);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Onglet Composants ---------- */
+
+/* Impacts par lot */
+.tableau-lots .ligne-lot { background: #f6f3fa; }
+.tableau-lots .ligne-sous-lot th { font-weight: 400; padding-left: 30px; }
+.tableau-lots .ligne-sous-lot td { color: var(--texte-doux); }
+.tableau-lots.sans-sous-lots .ligne-sous-lot { display: none; }
+.part { min-width: 150px; white-space: nowrap; }
+.barre-part {
+  display: inline-block;
+  width: 90px;
+  height: 12px;
+  margin-right: 8px;
+  vertical-align: middle;
+  background: var(--pastille);
+  border: 1.5px solid var(--encre);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.barre-plein { display: block; height: 100%; background: var(--orchidee); }
+.ligne-sous-lot .barre-plein { background: var(--raisin); }
+.valeur-part { font-variant-numeric: tabular-nums; }
+.bascule { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 10px 4px; font-weight: 600; cursor: pointer; }
+.bascule input { accent-color: var(--orchidee); width: 18px; height: 18px; }
+
+/* Filtres */
+.filtres {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 16px;
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  background: var(--carte);
+  border: var(--trait) solid var(--encre);
+  border-radius: var(--rayon);
+}
+.filtre { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 700; color: var(--orchidee); }
+.filtre input, .filtre select {
+  font: inherit;
+  font-weight: 400;
+  color: var(--encre);
+  padding: 7px 10px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-petit);
+  background: #fff;
+  max-width: 230px;
+}
+.filtre-recherche { flex: 1 1 220px; }
+.filtre-recherche input { max-width: none; }
+.compteur { margin-left: auto; font-weight: 700; padding-bottom: 8px; white-space: nowrap; }
+
+/* Tableau des composants */
+.tableau-composants { font-size: 13.5px; }
+.tableau-composants .position { min-width: 150px; }
+.tableau-composants .fiche { min-width: 260px; }
+.tableau-composants .nom-fiche { display: block; font-weight: 700; }
+.tableau-composants .detail { display: block; font-size: 12px; color: var(--texte-doux); }
+.tableau-composants .position .detail { display: inline; }
+.tableau-composants .commentaire {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--orchidee);
+  font-style: italic;
+}
+.parametres { margin-top: 4px; font-size: 12px; }
+.parametres summary { cursor: pointer; color: var(--raisin); font-weight: 700; }
+.parametres ul { margin: 4px 0 0; padding-left: 18px; }
+
+/* En-têtes triables */
+.tri {
+  border: none;
+  background: none;
+  color: inherit;
+  font-weight: 700;
+  padding: 0;
+  cursor: pointer;
+  text-align: inherit;
+}
+.tri::after { content: " ↕"; opacity: 0.5; }
+th[aria-sort="ascending"] .tri::after { content: " ↑"; opacity: 1; }
+th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
+.tri:focus-visible { outline-color: var(--or-vif); }
+
+/* Tableau des composants : hauteur limitée, en-tête fixe */
+.tableau-composants-cadre { max-height: 70vh; overflow: auto; }
+
+/* ---------- Pied de page ---------- */
+.pied {
+  padding: 16px 28px;
+  border-top: var(--trait) solid var(--encre);
+  background: var(--carte);
+  font-size: 14px;
+  color: var(--texte-doux);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pied a { color: var(--orchidee); font-weight: 700; }
+
+/* ---------- Synthèse : écart aux seuils ---------- */
+.carte-ecarts h3 { margin: 0 0 8px; }
+.carte-ecarts .sous-titre-infos { margin-top: 16px; }
+.carte-ecarts + .carte { margin-top: 26px; }
+.legende-marges { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; font-weight: 700; }
+.item-marge { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Mêmes colonnes pour les repères et les lignes : nom, piste, valeur, état */
+.ligne-ecart, .reperes-ecart {
+  display: grid;
+  grid-template-columns: 130px minmax(120px, 1fr) 76px 150px;
+  column-gap: 12px;
+  align-items: center;
+}
+.ligne-ecart { min-height: 38px; padding: 3px 8px; border-radius: var(--rayon-petit); }
+.reperes-ecart { margin-top: 10px; padding: 0 8px; font-size: 12px; color: var(--texte-doux); }
+.reperes-ecart span:first-child { grid-column: 2; grid-row: 1; justify-self: start; }
+.reperes-ecart span:last-child { grid-column: 2; grid-row: 1; justify-self: end; }
+.nom-ecart { font-weight: 700; }
+.valeur-ecart { font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+.etat-ecart { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
+
+/* Piste : le seuil est au centre, bandes d'avertissement juste en dessous */
+.piste-ecart {
+  position: relative;
+  height: 20px;
+  background: var(--pastille);
+  border: 2px solid var(--encre);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.piste-ecart span { position: absolute; top: 0; bottom: 0; }
+.bande-alerte { background: var(--or-vif); opacity: 0.35; }
+.bande-forte { background: var(--orange-risque); opacity: 0.45; }
+.barre-ecart { background: var(--bleu-acier); }
+.niveau-alerte .barre-ecart { background: var(--or-vif); }
+.niveau-forte .barre-ecart { background: var(--orange-risque); }
+.niveau-depasse .barre-ecart { background: var(--corail); }
+.axe-seuil { left: 50%; width: 3px; margin-left: -1.5px; background: var(--encre); }
+
+/* Gros avertissement : logo plus grand et ligne surlignée */
+.ligne-ecart.niveau-forte { background: #ffe6cc; }
+.ligne-ecart.niveau-depasse { background: #fde4e0; }
+
+.logo-marge {
+  display: inline-flex;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 3px;
+  border: 2px solid var(--encre);
+  border-radius: 50%;
+}
+.logo-marge svg { width: 100%; height: 100%; stroke-width: 3; }
+.logo-conforme { background: var(--bleu-acier); }
+.logo-alerte { background: var(--or-vif); }
+.logo-forte { background: var(--orange-risque); width: 34px; height: 34px; padding: 4px; border-width: 3px; }
+.logo-depasse { background: var(--corail); }
+.logo-absent { background: var(--pastille); color: var(--texte-doux); }
+
+/* ---------- Onglet Indicateurs : calcul des seuils ---------- */
+.carte-calcul { padding: 16px 20px; }
+.calcul-zone + .calcul-zone { margin-top: 12px; padding-top: 12px; border-top: 1.5px solid #dcdbe2; }
+.calcul-zone > summary { cursor: pointer; font-weight: 700; }
+.titre-calcul { color: var(--orchidee); font-size: 17px; }
+.sref-calcul { margin-left: 12px; font-size: 13px; font-weight: 400; color: var(--texte-doux); }
+.ligne-calcul {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 2px 12px;
+  align-items: center;
+  padding: 6px 0;
+}
+.ligne-calcul + .ligne-calcul { border-top: 1px dashed #dcdbe2; }
+.nom-calcul { font-weight: 700; }
+.formule { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.formule .note { margin: 0; }
+.signe-calcul { font-weight: 800; }
+.terme-calcul {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1px 8px;
+  background: var(--pastille);
+  border-radius: 8px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.valeur-terme { font-weight: 700; }
+.nom-terme { font-size: 11px; color: var(--texte-doux); }
+.resultat-calcul { background: var(--orchidee); color: #fff; }
+.resultat-calcul .nom-terme { color: #fff; }
+.ecart-calcul { grid-column: 2; margin: 2px 0 0; font-size: 13px; font-weight: 700; color: #b3362a; }
+.lien-outil {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 14px;
+  border: 2px solid var(--encre);
+  border-radius: 999px;
+  background: var(--bleu-acier);
+  color: var(--encre);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.lien-outil:hover { background: var(--or-vif); }
+
+/* Risques : du plus risqué au moins risqué */
+.liste-risques { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.risque {
+  display: grid;
+  grid-template-columns: 36px minmax(120px, 220px) 1fr;
+  gap: 2px 10px;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--carte);
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-petit);
+}
+.risque.niveau-alerte { background: #fff6cc; }
+.risque.niveau-forte { background: #ffe6cc; }
+.risque.niveau-depasse { background: #fde4e0; }
+.risque .logo-marge { justify-self: center; }
+.nom-risque { font-weight: 700; }
+.source-risque { display: block; font-size: 13px; font-weight: 400; color: var(--texte-doux); }
+.texte-risque { font-size: 14px; }
+
+/* Tableau des écarts du projet */
+.cellule-ecart { min-width: 118px; }
+.cellule-ecart .logo-marge { margin-right: 8px; vertical-align: middle; }
+.cellule-ecart.niveau-alerte { background: #fff6cc; }
+.cellule-ecart.niveau-forte { background: #ffe6cc; }
+.cellule-ecart.niveau-depasse { background: #fde4e0; }
+.cellule-ecart .valeur-cellule { font-size: 16px; font-weight: 800; }
+
+/* Composition de l'Ic : blocs additionnés de gauche à droite */
+.composition { display: flex; align-items: stretch; gap: 10px; }
+.composition-batiment + .composition-batiment { margin-top: 12px; }
+.composition-batiment > summary { margin-bottom: 8px; cursor: pointer; font-weight: 700; color: var(--orchidee); }
+.bloc-ic {
+  --teinte: var(--bleu-acier);
+  --teinte-texte: var(--encre);
+  --voile: #e6eef3;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 10px 12px;
+  background: var(--voile);
+  border: var(--trait) solid var(--teinte);
+  border-radius: var(--rayon-petit);
+}
+.bloc-batiment { --teinte: var(--raisin); --teinte-texte: #fff; --voile: #e9e8f2; }
+.bloc-projet { --teinte: var(--orchidee); --teinte-texte: #fff; --voile: #e8e2ee; }
+.bloc-autres { --teinte: #b9b8c4; --voile: #f4f4f6; margin-left: 12px; }
+.titre-ic {
+  margin: 0 -10px 4px;
+  padding: 5px 8px;
+  background: var(--teinte);
+  color: var(--teinte-texte);
+  font-size: 13px;
+  text-align: center;
+}
+.pile-ic { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.signe-ic { align-self: center; font-size: 20px; font-weight: 800; line-height: 1; }
+.plus-bloc { align-self: center; font-size: 30px; font-weight: 800; }
+.boite-ic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 6px;
+  background: var(--carte);
+  border: 2px solid var(--teinte);
+  border-radius: 8px;
+  text-align: center;
+  line-height: 1.25;
+}
+.boite-ic.avec-seuil, .total-ic { border-width: 3px; }
+.boite-ic.avec-seuil { background: var(--teinte); color: var(--teinte-texte); }
+.libelle-ic { font-size: 13px; font-weight: 700; }
+.valeur-ic { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.valeur-autre { font-size: 17px; }
+.occupant-ic { font-size: 12px; }
+.seuil-ic {
+  margin-top: 2px;
+  padding: 0 8px;
+  background: var(--carte);
+  color: var(--encre);
+  border: 1.5px solid var(--encre);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ---------- Onglet Graphiques ---------- */
+.carte-graphique h3 { margin: 0; }
+.carte-graphique > .note { margin-top: 2px; }
+.graphique { width: 100%; }
+.graphique.avec-trace { margin-top: 12px; }
+.parametres-graphique { display: flex; flex-wrap: wrap; gap: 10px 18px; }
+.parametres-graphique:not(:empty) { margin-top: 12px; }
+.parametre-graphique { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; }
+.parametre-graphique input {
+  width: 90px;
+  padding: 4px 8px;
+  font: inherit;
+  border: var(--trait) solid var(--encre);
+  border-radius: var(--rayon-petit);
+  background: var(--carte);
+}
+.donnees-graphique { margin-top: 12px; font-size: 14px; }
+.donnees-graphique summary { cursor: pointer; font-weight: 700; color: var(--orchidee); }
+.donnees-graphique .defilement { margin-top: 8px; }
+
+/* Légende des contributeurs : le cadre regroupe ce qui compte dans l'Ic construction */
+.legende-contributeurs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px 18px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+.entree-legende { display: inline-flex; align-items: center; gap: 6px; }
+.pastille-legende { width: 14px; height: 14px; flex: none; }
+.trait-legende { width: 22px; height: 3px; flex: none; }
+.legende-cadre {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  align-items: center;
+  gap: 4px 16px;
+  padding: 6px 12px;
+  border: var(--trait) solid var(--encre);
+  border-radius: var(--rayon-petit);
+}
+.titre-cadre { grid-column: 1 / -1; font-weight: 700; }
+
+/* Cartes des macro-lots (couleur du liseré et des chiffres : charte des graphiques) */
+.cartes-macro { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 10px 0 14px; }
+.carte-macro {
+  padding: 14px 10px;
+  text-align: center;
+  border: 1px solid #c9c9d1;
+  border-top: 5px solid #c9c9d1;
+  border-radius: var(--rayon-petit);
+}
+.carte-macro p { margin: 0; }
+.macro-nom { font-size: 17px; font-weight: 800; }
+.macro-part { font-size: 46px; font-weight: 800; line-height: 1.15; margin-top: 6px !important; }
+.macro-versus { font-size: 22px; color: var(--texte-doux); margin-top: 8px !important; }
+.macro-detail { font-size: 13px; color: var(--texte-doux); }
+
+/* ---------- Écrans étroits ---------- */
+@media (max-width: 900px) {
+  .cadre { margin: 0; border-radius: 0; border-width: 0; }
+  .contenu { padding: 18px 16px; }
+  .entete { padding: 14px 16px; gap: 12px; }
+  .logo { font-size: 26px; }
+  .logo-marque { width: 44px; }
+  .onglets { margin-left: 0; width: 100%; order: 3; gap: 2px; }
+  .onglet { padding: 4px 12px; font-size: 15px; }
+  .colonnes, .colonnes.vue-large { grid-template-columns: 1fr; }
+  .infos { grid-template-columns: 1fr; gap: 2px 0; }
+  .infos dd { margin-bottom: 8px; }
+  .compteur { margin-left: 0; }
+  .bouton-principal { flex: 1 1 100%; min-width: 0; }
+  .arbre { --retrait-arbre: 16px; }
+  .carte-graphique, .carte-ecarts { padding: 16px 12px; }
+  .legende-cadre { grid-template-columns: repeat(2, auto); }
+  .ligne-ecart { grid-template-columns: 1fr auto; row-gap: 4px; padding: 6px; }
+  .ligne-calcul { grid-template-columns: 1fr; }
+  .ecart-calcul { grid-column: 1; }
+  .risque { grid-template-columns: 36px 1fr; }
+  .texte-risque { grid-column: 2; }
+  .composition { flex-direction: column; }
+  .bloc-autres { margin-left: 0; }
+  .piste-ecart { grid-column: 1 / -1; grid-row: 2; }
+  .etat-ecart { grid-column: 1 / -1; }
+  .reperes-ecart { grid-template-columns: 1fr; }
+  .reperes-ecart span:first-child, .reperes-ecart span:last-child { grid-column: 1; }
+  .cartes-macro { grid-template-columns: 1fr; }
+}

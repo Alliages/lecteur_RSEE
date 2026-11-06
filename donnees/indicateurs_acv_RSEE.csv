@@ -1,0 +1,61 @@
+﻿famille;ref;libelle;unite;statut;indice
+EN 15804+A1;1;Changement climatique;kg éq. CO₂;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A1;2;Appauvrissement de la couche d'ozone;kg éq. CFC-11;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A1;3;Acidification des sols et de l'eau;kg éq. SO₂;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A1;4;Eutrophisation;kg éq. PO₄³⁻;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A1;5;Formation d'ozone photochimique;kg éq. C₂H₄;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A1;6;Épuisement des ressources abiotiques – éléments;kg éq. Sb;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A1;7;Épuisement des ressources abiotiques – combustibles fossiles;MJ;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A1;8;Énergie primaire renouvelable hors matière première;MJ;déduit;8 + 9 = 10 sur 7 bâtiments sur 8
+EN 15804+A1;9;Énergie primaire renouvelable comme matière première;MJ;déduit;8 + 9 = 10 sur 7 bâtiments sur 8
+EN 15804+A1;10;Énergie primaire renouvelable totale;MJ;déduit;8 + 9 = 10 sur 7 bâtiments sur 8
+EN 15804+A1;11;Énergie primaire non renouvelable hors matière première;MJ;déduit;11 + 12 = 13 sur 8 bâtiments sur 8
+EN 15804+A1;12;Énergie primaire non renouvelable comme matière première;MJ;déduit;11 + 12 = 13 sur 8 bâtiments sur 8
+EN 15804+A1;13;Énergie primaire non renouvelable totale;MJ;déduit;11 + 12 = 13 sur 8 bâtiments sur 8
+EN 15804+A1;14;Matière secondaire;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A1;15;Combustibles secondaires renouvelables;MJ;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A1;16;Combustibles secondaires non renouvelables;MJ;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A1;17;Utilisation nette d'eau douce;m³;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A1;18;Déchets dangereux éliminés;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A1;19;Déchets non dangereux éliminés;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A1;20;Déchets radioactifs éliminés;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A1;21;Composants destinés à la réutilisation;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A1;22;Matériaux destinés au recyclage;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A1;23;Matériaux destinés à la récupération d'énergie;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A1;24;Énergie fournie à l'extérieur;MJ;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;101;Changement climatique – total;kg éq. CO₂;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A2;102;Changement climatique – fossile;kg éq. CO₂;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;103;Changement climatique – biogénique;kg éq. CO₂;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;104;Changement climatique – usage des sols;kg éq. CO₂;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;105;Appauvrissement de la couche d'ozone;kg éq. CFC-11;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A2;106;Acidification;mol éq. H⁺;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;107;Eutrophisation – eau douce;kg éq. P;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;108;Eutrophisation – eau marine;kg éq. N;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;109;Eutrophisation – terrestre;mol éq. N;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;110;Formation d'ozone photochimique;kg éq. COVNM;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test ; absent de 2 RSEE sur 6
+EN 15804+A2;111;Épuisement des ressources abiotiques – minéraux et métaux;kg éq. Sb;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A2;112;Épuisement des ressources abiotiques – combustibles fossiles;MJ;déduit;somme ou ordre de grandeur cohérents dans les RSEE de test
+EN 15804+A2;113;Besoin en eau (privation);m³ éq.;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;114;Émissions de particules fines;incidence de maladies;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;115;Rayonnements ionisants;kBq éq. U235;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;116;Écotoxicité – eau douce;CTUe;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;117;Toxicité humaine – effets cancérogènes;CTUh;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;118;Toxicité humaine – effets non cancérogènes;CTUh;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;119;Qualité du sol;sans dimension;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;120;Énergie primaire renouvelable hors matière première;MJ;déduit;120 + 121 = 122 sur 4 bâtiments sur 8 seulement
+EN 15804+A2;121;Énergie primaire renouvelable comme matière première;MJ;déduit;120 + 121 = 122 sur 4 bâtiments sur 8 seulement
+EN 15804+A2;122;Énergie primaire renouvelable totale;MJ;déduit;120 + 121 = 122 sur 4 bâtiments sur 8 seulement
+EN 15804+A2;123;Énergie primaire non renouvelable hors matière première;MJ;déduit;123 + 124 = 125 sur 4 bâtiments sur 8 seulement
+EN 15804+A2;124;Énergie primaire non renouvelable comme matière première;MJ;déduit;123 + 124 = 125 sur 4 bâtiments sur 8 seulement
+EN 15804+A2;125;Énergie primaire non renouvelable totale;MJ;déduit;123 + 124 = 125 sur 4 bâtiments sur 8 seulement
+EN 15804+A2;126;Matière secondaire;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;127;Combustibles secondaires renouvelables;MJ;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;128;Combustibles secondaires non renouvelables;MJ;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;129;Utilisation nette d'eau douce;m³;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;130;Déchets dangereux éliminés;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;131;Déchets non dangereux éliminés;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;132;Déchets radioactifs éliminés;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;133;Composants destinés à la réutilisation;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;134;Matériaux destinés au recyclage;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;135;Matériaux destinés à la récupération d'énergie;kg;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test
+EN 15804+A2;136;Énergie fournie à l'extérieur;MJ;déduit;position dans la liste de la norme ; valeurs nulles ou non contrôlées dans les RSEE de test

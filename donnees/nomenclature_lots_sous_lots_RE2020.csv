@@ -1,0 +1,49 @@
+﻿lot_ref;lot_nom;lot_nom_court;sous_lot_ref;sous_lot_id;sous_lot_nom;macro_lot;colonne_ic
+1;VRD (voirie et réseaux divers);VRD;1;1.1;Réseaux (extérieurs, mise en œuvre, raccordement);VRD;ic_composant_sous_lot_1_1
+1;VRD (voirie et réseaux divers);VRD;2;1.2;Stockage;VRD;ic_composant_sous_lot_1_2
+1;VRD (voirie et réseaux divers);VRD;3;1.3;Aires de stationnement extérieures;VRD;ic_composant_sous_lot_1_3
+2;Fondations et infrastructure;Fondations;1;2.1;Fondations;Gros œuvre;ic_composant_sous_lot_2_1
+2;Fondations et infrastructure;Fondations;2;2.2;Murs et structures enterrées (escalier de cave, parking…);Gros œuvre;ic_composant_sous_lot_2_2
+2;Fondations et infrastructure;Fondations;3;2.3;Parcs de stationnement en superstructure (hors garages des maisons individuelles ou accolées);Gros œuvre;ic_composant_sous_lot_2_3
+3;Superstructure – Maçonnerie;Superstructure;1;3.1;Éléments horizontaux – planchers, dalles, balcons;Gros œuvre;ic_composant_sous_lot_3_1
+3;Superstructure – Maçonnerie;Superstructure;2;3.2;Éléments horizontaux – poutres;Gros œuvre;ic_composant_sous_lot_3_2
+3;Superstructure – Maçonnerie;Superstructure;3;3.3;Éléments verticaux – façades;Gros œuvre;ic_composant_sous_lot_3_3
+3;Superstructure – Maçonnerie;Superstructure;4;3.4;Éléments verticaux – refends;Gros œuvre;ic_composant_sous_lot_3_4
+3;Superstructure – Maçonnerie;Superstructure;5;3.5;Éléments verticaux – poteaux;Gros œuvre;ic_composant_sous_lot_3_5
+3;Superstructure – Maçonnerie;Superstructure;6;3.6;Escaliers et rampes;Gros œuvre;ic_composant_sous_lot_3_6
+3;Superstructure – Maçonnerie;Superstructure;7;3.7;Éléments d'isolation;Gros œuvre;ic_composant_sous_lot_3_7
+3;Superstructure – Maçonnerie;Superstructure;8;3.8;Maçonneries diverses;Gros œuvre;ic_composant_sous_lot_3_8
+4;Couverture – Étanchéité – Charpente – Zinguerie;Couverture;1;4.1;Toitures terrasses;Second œuvre;ic_composant_sous_lot_4_1
+4;Couverture – Étanchéité – Charpente – Zinguerie;Couverture;2;4.2;Toitures en pente;Second œuvre;ic_composant_sous_lot_4_2
+4;Couverture – Étanchéité – Charpente – Zinguerie;Couverture;3;4.3;Éléments techniques de toiture;Second œuvre;ic_composant_sous_lot_4_3
+5;Cloisonnement – Doublage – Plafonds suspendus – Menuiseries intérieures;Cloisonnement;1;5.1;Cloisons et portes intérieures;Second œuvre;ic_composant_sous_lot_5_1
+5;Cloisonnement – Doublage – Plafonds suspendus – Menuiseries intérieures;Cloisonnement;2;5.2;Doublages muraux, matériaux de protection, isolants et membranes;Second œuvre;ic_composant_sous_lot_5_2
+5;Cloisonnement – Doublage – Plafonds suspendus – Menuiseries intérieures;Cloisonnement;3;5.3;Plafonds suspendus;Second œuvre;ic_composant_sous_lot_5_3
+5;Cloisonnement – Doublage – Plafonds suspendus – Menuiseries intérieures;Cloisonnement;4;5.4;Planchers surélevés;Second œuvre;ic_composant_sous_lot_5_4
+5;Cloisonnement – Doublage – Plafonds suspendus – Menuiseries intérieures;Cloisonnement;5;5.5;Menuiseries, métalleries et quincailleries;Second œuvre;ic_composant_sous_lot_5_5
+6;Façades et menuiseries extérieures;Façades;1;6.1;Revêtement, isolation et doublage extérieur;Second œuvre;ic_composant_sous_lot_6_1
+6;Façades et menuiseries extérieures;Façades;2;6.2;Portes, fenêtres, fermetures, protections solaires;Second œuvre;ic_composant_sous_lot_6_2
+6;Façades et menuiseries extérieures;Façades;3;6.3;Habillages et ossatures;Second œuvre;ic_composant_sous_lot_6_3
+7;Revêtements des sols, murs et plafonds – Chape – Peintures – Produits de décoration;Revêtements intérieurs;1;7.1;Revêtements des sols;Second œuvre;ic_composant_sous_lot_7_1
+7;Revêtements des sols, murs et plafonds – Chape – Peintures – Produits de décoration;Revêtements intérieurs;2;7.2;Revêtements des murs et plafonds;Second œuvre;ic_composant_sous_lot_7_2
+7;Revêtements des sols, murs et plafonds – Chape – Peintures – Produits de décoration;Revêtements intérieurs;3;7.3;Éléments de décoration et revêtements des menuiseries;Second œuvre;ic_composant_sous_lot_7_3
+8;CVC (chauffage – ventilation – refroidissement – eau chaude sanitaire);CVC;1;8.1;Équipements de production (chaud / froid), hors cogénération;Lots techniques;ic_composant_sous_lot_8_1
+8;CVC (chauffage – ventilation – refroidissement – eau chaude sanitaire);CVC;2;8.2;Systèmes de cogénération;Lots techniques;ic_composant_sous_lot_8_2
+8;CVC (chauffage – ventilation – refroidissement – eau chaude sanitaire);CVC;3;8.3;Systèmes d'émission;Lots techniques;ic_composant_sous_lot_8_3
+8;CVC (chauffage – ventilation – refroidissement – eau chaude sanitaire);CVC;4;8.4;Traitement de l'air et éléments de désenfumage;Lots techniques;ic_composant_sous_lot_8_4
+8;CVC (chauffage – ventilation – refroidissement – eau chaude sanitaire);CVC;5;8.5;Réseaux et conduits;Lots techniques;ic_composant_sous_lot_8_5
+8;CVC (chauffage – ventilation – refroidissement – eau chaude sanitaire);CVC;6;8.6;Stockage de combustibles;Lots techniques;ic_composant_sous_lot_8_6
+8;CVC (chauffage – ventilation – refroidissement – eau chaude sanitaire);CVC;7;8.7;Fluides frigorigènes;Lots techniques;ic_composant_sous_lot_8_7
+9;Installations sanitaires;Installations sanitaires;1;9.1;Éléments sanitaires et robinetterie;Lots techniques;ic_composant_sous_lot_9_1
+9;Installations sanitaires;Installations sanitaires;2;9.2;Canalisations, réseaux et systèmes de traitement;Lots techniques;ic_composant_sous_lot_9_2
+10;Réseaux d'énergie (courant fort);Courant fort;1;10.1;Réseaux électriques;Lots techniques;ic_composant_sous_lot_10_1
+10;Réseaux d'énergie (courant fort);Courant fort;2;10.2;Ensemble de dispositifs pour la sécurité;Lots techniques;ic_composant_sous_lot_10_2
+10;Réseaux d'énergie (courant fort);Courant fort;3;10.3;Éclairage intérieur;Lots techniques;ic_composant_sous_lot_10_3
+10;Réseaux d'énergie (courant fort);Courant fort;4;10.4;Éclairage extérieur sur le bâtiment;Lots techniques;ic_composant_sous_lot_10_4
+10;Réseaux d'énergie (courant fort);Courant fort;5;10.5;Systèmes d’automatisation et de contrôle;Lots techniques;ic_composant_sous_lot_10_5
+10;Réseaux d'énergie (courant fort);Courant fort;6;10.6;Tableaux et appareillages;Lots techniques;ic_composant_sous_lot_10_6
+11;Réseaux de communication (courant faible);Courant faible;1;11.1;Réseaux électriques et de communications;Lots techniques;ic_composant_sous_lot_11_1
+11;Réseaux de communication (courant faible);Courant faible;2;11.2;Systèmes de sécurité (personnes et bien);Lots techniques;ic_composant_sous_lot_11_2
+11;Réseaux de communication (courant faible);Courant faible;3;11.3;Installations techniques et appareillages;Lots techniques;ic_composant_sous_lot_11_3
+12;Appareils élévateurs et autres équipements de transport intérieur;Appareils élévateurs;1;12.1;Ascenseurs, monte-charges, escaliers mécaniques, trottoirs roulants et nacelles de nettoyage;Lots techniques;ic_composant_sous_lot_12_1
+13;Équipement de production locale d'électricité;Photovoltaique;1;13.1;Installation associée au bâtiment, dédiée à la production d’électricité;Lots techniques;ic_composant_sous_lot_13_1

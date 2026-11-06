@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecteur RSEE</title>
+  <meta name="description" content="Lecture d'un RSEE RE2020 dans le navigateur, sans envoi du fichier.">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="cadre">
+
+    <!-- En-tête : logo, onglets, version -->
+    <header class="entete">
+      <a class="logo" href="./" aria-label="Lecteur RSEE, accueil">
+        <img class="logo-marque" src="images/logo.svg" alt="">
+        <span>lecteur<span class="point">.</span><span class="accent">RSEE</span></span>
+      </a>
+      <nav class="onglets" aria-label="Onglets">
+        <button class="onglet" type="button" data-onglet="synthese" aria-current="page">Synthèse</button>
+        <button class="onglet" type="button" data-onglet="informations">Informations</button>
+        <button class="onglet" type="button" data-onglet="indicateurs">Indicateurs</button>
+        <button class="onglet" type="button" data-onglet="composants">Composants</button>
+        <button class="onglet" type="button" data-onglet="graphiques">Graphiques du HUB</button>
+      </nav>
+      <span class="version" id="version">v</span>
+    </header>
+
+    <main class="contenu">
+      <!-- Import : sélection ou glisser-déposer -->
+      <section class="import" aria-label="Ouvrir un RSEE">
+        <div class="zone-depot" id="zone-depot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6M9 15l3-3 3 3"/>
+          </svg>
+          <span id="texte-depot">Glissez ici un fichier RSEE (.xml)…</span>
+        </div>
+        <button class="bouton-principal" id="bouton-ouvrir" type="button">Ouvrir un RSEE</button>
+        <input type="file" id="selecteur" accept=".xml,text/xml,application/xml" hidden>
+      </section>
+
+      <p class="info-fichier" id="info-fichier">
+        Lecture locale : le fichier reste sur votre poste, rien n'est envoyé.
+      </p>
+      <div class="message" id="message" role="alert" hidden></div>
+
+      <!-- Arborescence à gauche, détail du nœud sélectionné à droite -->
+      <div class="colonnes">
+        <section aria-labelledby="titre-arbre">
+          <h2 class="titre-colonne" id="titre-arbre">Arborescence</h2>
+          <ul class="arbre" id="arbre"></ul>
+        </section>
+        <section aria-labelledby="titre-detail">
+          <h2 class="titre-colonne" id="titre-detail">Détail</h2>
+          <div id="detail"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="pied">
+      <span>Lecture seule d'un RSEE RE2020 · aucun recalcul réglementaire</span>
+      <span>Guillaume Meunier · Licence GPL-3.0 · <a href="https://github.com/Alliages/lecteur_RSEE">code source</a></span>
+    </footer>
+  </div>
+
+  <!-- Scripts classiques (pas de modules) : la page fonctionne aussi ouverte en local -->
+  <script src="js/reglages.js"></script>
+  <script src="js/nomenclatures.js"></script>
+  <script src="js/codes.js"></script>
+  <script src="js/indicateurs.js"></script>
+  <script src="js/composants.js"></script>
+  <script src="js/plotly-basic.min.js"></script>
+  <script src="js/reglages_graphiques.js"></script>
+  <script src="js/graphiques.js"></script>
+  <script src="js/graphiques_traces.js"></script>
+  <script src="js/reglages_seuils.js"></script>
+  <script src="js/seuils.js"></script>
+  <script src="js/lecture.js"></script>
+  <script src="js/interface.js"></script>
+</body>
+</html>

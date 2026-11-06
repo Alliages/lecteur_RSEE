@@ -1,0 +1,18 @@
+# Les RSEE ne vont jamais dans le dépôt (données nominatives : noms, SIRET, adresses)
+*.xml
+*.zip
+tests/rsee/
+
+# Captures d'écran des tests : elles montrent le contenu des RSEE
+tests/captures/
+
+# Environnement Python
+.venv/
+__pycache__/
+
+# Documents de travail propres à Claude : jamais dans le dépôt
+Instructions.md
+Description_graphiques_2_a_8_OPEE.md
+
+# Page du portail RE2020 enregistrée pour consultation : document de travail
+Gestion des versions*.html

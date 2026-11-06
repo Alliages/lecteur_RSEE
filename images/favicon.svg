@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Proposition A2 « Atome dégradé » : variante de A, sommets en dégradé de jaune.
+       Fond violet, contour blanc, bâtiment blanc. -->
+  <defs>
+    <!-- Dégradé vertical de jaune sur toute l'icône : jaune clair en haut, or soutenu en bas -->
+    <linearGradient id="jaune" gradientUnits="userSpaceOnUse" x1="50" y1="0" x2="50" y2="100">
+      <stop offset="0" stop-color="#ffec70"/>
+      <stop offset="0.5" stop-color="#ffda33"/>
+      <stop offset="1" stop-color="#f2ae00"/>
+    </linearGradient>
+  </defs>
+  <polygon points="50,8 86.4,29 86.4,71 50,92 13.6,71 13.6,29" fill="#542e71" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+  <g fill="url(#jaune)">
+    <circle cx="50" cy="8" r="8"/><circle cx="86.4" cy="29" r="8"/><circle cx="86.4" cy="71" r="8"/>
+    <circle cx="50" cy="92" r="8"/><circle cx="13.6" cy="71" r="8"/><circle cx="13.6" cy="29" r="8"/>
+  </g>
+  <path d="M34 70 V32 H52 V70 M52 70 V50 H67 V70" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
