@@ -867,8 +867,8 @@ th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
 /* ---------- Onglet Graphiques ---------- */
 .carte-graphique { position: relative; }
 .carte-graphique h3 { margin: 0; }
-.carte-graphique > h3 { padding-right: 64px; color: #000; }
-.logo-hub { position: absolute; top: 12px; right: 12px; width: auto; height: 66px; }
+.carte-graphique > h3 { padding-right: 80px; color: #000; }
+.logo-hub { position: absolute; z-index: 5; top: 12px; right: 12px; width: auto; height: 86px; pointer-events: none; } /* devant le graphique, sans bloquer son survol */
 .carte-graphique > .note { margin-top: 2px; }
 .graphique { width: 100%; }
 .graphique.avec-trace { margin-top: 12px; }

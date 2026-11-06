@@ -503,7 +503,7 @@ def main():
             nb_cartes = page.locator(".carte-graphique").count()
             verifier(nb_cartes > 0 and page.locator(".carte-graphique > img.logo-hub").count() == nb_cartes, "logo du HUB absent d'un graphique")
             page.wait_for_function("[...document.querySelectorAll('.logo-hub')].every(i => i.complete)")
-            verifier(page.evaluate("[...document.querySelectorAll('.logo-hub')].every(i => i.naturalWidth > 0 && i.clientHeight === 66)"), "logo du HUB non chargé ou mauvaise taille")
+            verifier(page.evaluate("[...document.querySelectorAll('.logo-hub')].every(i => i.naturalWidth > 0 && i.clientHeight === 86 && getComputedStyle(i).zIndex === '5')"), "logo du HUB non chargé ou mauvaise taille")
             couleurs = page.evaluate("""() => {
                 const style = (s) => getComputedStyle(document.querySelector(s));
                 return [style('.carte-graphique > h3').color, style('.donnees-graphique summary').color,
