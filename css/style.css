@@ -865,7 +865,10 @@ th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
 }
 
 /* ---------- Onglet Graphiques ---------- */
+.carte-graphique { position: relative; }
 .carte-graphique h3 { margin: 0; }
+.carte-graphique > h3 { padding-right: 64px; color: #000; }
+.logo-hub { position: absolute; top: 12px; right: 12px; width: auto; height: 66px; }
 .carte-graphique > .note { margin-top: 2px; }
 .graphique { width: 100%; }
 .graphique.avec-trace { margin-top: 12px; }
@@ -881,7 +884,8 @@ th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
   background: var(--carte);
 }
 .donnees-graphique { margin-top: 12px; font-size: 14px; }
-.donnees-graphique summary { cursor: pointer; font-weight: 700; color: var(--orchidee); }
+.donnees-graphique summary { cursor: pointer; font-weight: 700; color: #000; }
+.donnees-graphique .tableau thead th { background: var(--survol-hub); color: #000; }
 .donnees-graphique .defilement { margin-top: 8px; }
 
 /* Légende des contributeurs : le cadre regroupe ce qui compte dans l'Ic construction */

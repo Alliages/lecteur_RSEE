@@ -1388,18 +1388,28 @@
     return bloc;
   }
 
-  // Tableau des impacts par lot et sous-lot (valeurs du RSEE, kg éq. CO₂/m²)
+  // Tableau des impacts par lot et sous-lot (valeurs du RSEE, kg éq. CO₂/m²).
+  // Quand tous les lots valent 0, l'Ic de chaque ligne est la somme de ses phases,
+  // comme dans les graphiques : voir CalculsGraphiques.sommePhases.
   function blocImpactsLots(impacts, icComposant) {
     const refs = Object.keys(impacts);
     if (refs.length === 0) return creer("p", "note", "Aucun impact par lot dans le RSEE.");
 
-    // Certains logiciels écrivent 0 pour tous les lots : on l'affiche comme non renseigné
+    // Certains logiciels écrivent 0 pour tous les lots : on prend alors la somme des
+    // phases ; sans phases non plus, l'impact par lot est affiché comme non renseigné.
+    // UDD et StockC valent aussi 0 dans ces RSEE : ils restent non renseignés.
     const tousNuls = refs.every((r) => !impacts[r].ic) && icComposant > 0;
+    const depuisPhases = tousNuls && refs.some((r) => CalculsGraphiques.sommePhases(impacts[r].phases) !== null);
+    const nonRenseigne = tousNuls && !depuisPhases;
+    const icLigne = (v) => (depuisPhases ? CalculsGraphiques.sommePhases(v.phases) : v.ic);
     const bloc = creer("div");
     if (tousNuls) {
       bloc.append(creer("p", "note note-encadree",
         "Le logiciel a écrit un impact nul pour tous les lots alors que l'Ic composants vaut " +
-        `${formatNombre(icComposant)}${ESP}kg éq. CO₂/m² : l'impact par lot n'est pas renseigné dans ce RSEE.`));
+        `${formatNombre(icComposant)}${ESP}kg éq. CO₂/m² : ` +
+        (depuisPhases
+          ? "l'Ic affiché ici est la somme des phases du cycle de vie de chaque lot. UDD et StockC ne sont pas renseignés."
+          : "l'impact par lot n'est pas renseigné dans ce RSEE.")));
     }
 
     const enveloppe = creer("div", "defilement");
@@ -1413,10 +1423,10 @@
     thead.append(tete);
     const tbody = creer("tbody");
 
-    const cellule = (v, dec, suffixe = "") => creer("td", "nombre", tousNuls || v === null || v === undefined ? "–" : formatNombre(v, dec) + suffixe);
+    const cellule = (v, dec, suffixe = "", masquer = nonRenseigne) => creer("td", "nombre", masquer || v === null || v === undefined ? "–" : formatNombre(v, dec) + suffixe);
     const barrePart = (ic) => {
       const td = creer("td", "part");
-      if (tousNuls || !icComposant || ic === null || ic === undefined) return td;
+      if (nonRenseigne || !icComposant || ic === null || ic === undefined) return td;
       const part = ic / icComposant;
       const barre = creer("span", "barre-part");
       const plein = creer("span", "barre-plein");
@@ -1429,20 +1439,22 @@
       const tr = creer("tr", classe);
       const th = creer("th");
       th.append(creer("span", "ref", ref), document.createTextNode(" " + libelle));
-      tr.append(th, cellule(v.ic, 1), barrePart(v.ic), cellule(v.ic_ded, 1),
-        cellule(v.udd === null || v.udd === undefined ? null : v.udd * 100, 0, ESP + "%"), cellule(v.stock_c, 2));
+      const ic = icLigne(v);
+      tr.append(th, cellule(ic, 1), barrePart(ic), cellule(v.ic_ded, 1),
+        cellule(v.udd === null || v.udd === undefined ? null : v.udd * 100, 0, ESP + "%", tousNuls),
+        cellule(v.stock_c, 2, "", tousNuls));
       return tr;
     };
 
     // Lots par impact décroissant (ordre des références si impacts non renseignés)
-    const ordre = refs.slice().sort((a, b) => (tousNuls ? Number(a) - Number(b) : (impacts[b].ic || 0) - (impacts[a].ic || 0)));
+    const ordre = refs.slice().sort((a, b) => (nonRenseigne ? Number(a) - Number(b) : (icLigne(impacts[b]) || 0) - (icLigne(impacts[a]) || 0)));
     let somme = 0;
     for (const r of ordre) {
       const lot = impacts[r];
-      somme += lot.ic || 0;
+      somme += icLigne(lot) || 0;
       tbody.append(ligne("ligne-lot", nomLot(r), r, lot));
       const sous = Object.keys(lot.sous_lots || {})
-        .sort((a, b) => (tousNuls ? 0 : (lot.sous_lots[b].ic || 0) - (lot.sous_lots[a].ic || 0)));
+        .sort((a, b) => (nonRenseigne ? 0 : (icLigne(lot.sous_lots[b]) || 0) - (icLigne(lot.sous_lots[a]) || 0)));
       for (const s of sous) tbody.append(ligne("ligne-sous-lot", nomSousLot(s), s, lot.sous_lots[s]));
     }
     table.append(thead, tbody);
@@ -1457,7 +1469,7 @@
     bascule.append(caseSousLots, document.createTextNode(" Détail par sous-lot"));
 
     bloc.append(bascule, enveloppe);
-    if (!tousNuls) {
+    if (!nonRenseigne) {
       bloc.append(creer("p", "note",
         `Ic, Ic DED en kg éq. CO₂/m², StockC en kg C/m², UDD en % — somme des lots : ${formatNombre(somme, 1)}` +
         `${ESP}kg éq. CO₂/m² (Ic composants du RSEE : ${formatNombre(icComposant ?? 0, 1)}).`));
@@ -1607,7 +1619,10 @@
   function carteGraphique(def) {
     const carte = creer("article", "carte carte-graphique");
     carte.dataset.graphique = def.id;
-    carte.append(creer("h3", null, def.titre));
+    const logo = creer("img", "logo-hub");
+    logo.src = REGLAGES_GRAPHIQUES.logo_hub;
+    logo.alt = "HUB Bas Carbone";
+    carte.append(logo, creer("h3", null, def.titre));
     if (def.sous_titre) carte.append(creer("p", "note", def.sous_titre));
     const parametres = creer("div", "parametres-graphique");
     const legende = creer("div");

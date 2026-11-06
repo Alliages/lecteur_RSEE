@@ -8,7 +8,7 @@ Lecture seule d'un RSEE RE2020 (fichier XML) dans le navigateur.
 
 Outil en ligne : https://alliages.github.io/lecteur_RSEE/
 
-État : version 0.8.x, outil en construction (onglets Synthèse, Informations, Indicateurs, Composants, Graphiques) (voir [ROADMAP.md](ROADMAP.md)).
+État : version 0.9.x, outil fonctionnel (onglets Synthèse, Informations, Indicateurs, Composants, Graphiques) (voir [ROADMAP.md](ROADMAP.md)).
 
 ## Utilisation
 

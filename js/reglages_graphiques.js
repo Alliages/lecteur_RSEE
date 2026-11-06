@@ -16,6 +16,9 @@ const REGLAGES_GRAPHIQUES = {
   unite_ic: "kgCO₂e/m² sur 50 ans",
   unite_stock: "kg C/m² SDP",
 
+  // Logo affiché en haut à droite de chaque graphique
+  logo_hub: "images/HUB-BC_logo.png",
+
   // Sous-lots les plus impactants : nombre affiché par défaut et bornes
   top_n_defaut: 10,
   top_n_min: 3,

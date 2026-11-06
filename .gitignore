@@ -6,6 +6,9 @@ tests/rsee/
 # Captures d'écran des tests : elles montrent le contenu des RSEE
 tests/captures/
 
+# Fichiers système Windows
+desktop.ini
+
 # Environnement Python
 .venv/
 __pycache__/

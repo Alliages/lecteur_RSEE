@@ -18,6 +18,7 @@ Usage : python tests/test_lecture.py [dossier_rsee]   (défaut : tests/rsee)
 import base64
 import csv
 import io
+import re
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
@@ -40,6 +41,7 @@ LARGEUR_ECRAN = 1360
 
 erreurs = []
 nb_controles = 0
+nb_lots_nuls = 0  # bâtiments de test dont tous les lots valent 0
 
 
 def verifier(condition, message):
@@ -72,6 +74,19 @@ def comparer(js, ref, chemin=""):
         verifier(egal(js, ref), f"{chemin} : JS={js!r} référence={ref!r}")
 
 
+def lire_ic_lots(page):
+    """Lots affichés dans l'onglet Composants : [référence, Ic, Ic DED, UDD, StockC] en texte."""
+    return page.evaluate("""() => [...document.querySelectorAll('.tableau-lots tr.ligne-lot')].map(tr => {
+        const c = tr.querySelectorAll('td');
+        return [tr.querySelector('.ref').textContent, c[0].textContent, c[2].textContent, c[3].textContent, c[4].textContent];
+    })""")
+
+
+def lire_nombre(texte_affiche):
+    """Nombre affiché à la française (espaces fines, virgule)."""
+    return float(re.sub(r"\s", "", texte_affiche).replace(",", "."))
+
+
 def lire_nomenclature_csv():
     with open(FICHIER_CSV, encoding="utf-8-sig", newline="") as f:
         lignes = list(csv.DictReader(f, delimiter=";"))
@@ -89,6 +104,7 @@ def lancer_navigateur(p):
 
 
 def main():
+    global nb_lots_nuls
     rsee = sorted(DOSSIER_RSEE.glob("*.xml"))
     if not rsee:
         print(f"Aucun RSEE dans {DOSSIER_RSEE}")
@@ -346,6 +362,19 @@ def main():
                 nb_lots = len(b["impacts_lots"]) + sum(len(l["sous_lots"]) for l in b["impacts_lots"].values())
                 verifier(page.locator(".tableau-lots tbody tr").count() == nb_lots,
                          f"{chemin.name} bâtiment {b['index']} : lignes du tableau des lots")
+                # Lots à 0 dans le RSEE : Ic = somme des phases de la référence Python
+                lots_nuls = not any(l["ic"] for l in b["impacts_lots"].values())
+                verifier(("somme des phases" in page.inner_text("#detail")) == lots_nuls, f"{chemin.name} : note sur la somme des phases")
+                if lots_nuls:
+                    nb_lots_nuls += 1
+                    phases_ref = graphiques_reference(chemin)[b["index"]]["lots"]
+                    lignes_lots = lire_ic_lots(page)
+                    for ref_lot, ic_lu, ded_lu, udd_lu, stock_lu in lignes_lots:
+                        verifier(abs(lire_nombre(ic_lu) - phases_ref[ref_lot]) <= 0.051, f"{chemin.name} lot {ref_lot} : Ic ≠ somme des phases")
+                        verifier(abs(lire_nombre(ded_lu) - b["impacts_lots"][ref_lot]["ic_ded"]) <= 0.051, f"{chemin.name} lot {ref_lot} : Ic DED")
+                        verifier(udd_lu == "–" and stock_lu == "–", f"{chemin.name} lot {ref_lot} : UDD ou StockC affiché")
+                    ic_lus = [lire_nombre(l[1]) for l in lignes_lots]
+                    verifier(ic_lus == sorted(ic_lus, reverse=True), f"{chemin.name} : lots non triés par impact")
                 if i == 0:
                     page.screenshot(path=str(DOSSIER_CAPTURES / (chemin.stem + "_composants.png")), full_page=True)
             z = modele["batiments"][0]["zones"][0]
@@ -470,6 +499,19 @@ def main():
             page.wait_for_selector(".noeud")
             page.click("[data-onglet=graphiques]")
             page.locator(".noeud[data-type=batiment]").first.click()
+            # Logo du HUB (fichier local) sur chaque graphique ; titres et données aux couleurs du HUB
+            nb_cartes = page.locator(".carte-graphique").count()
+            verifier(nb_cartes > 0 and page.locator(".carte-graphique > img.logo-hub").count() == nb_cartes, "logo du HUB absent d'un graphique")
+            page.wait_for_function("[...document.querySelectorAll('.logo-hub')].every(i => i.complete)")
+            verifier(page.evaluate("[...document.querySelectorAll('.logo-hub')].every(i => i.naturalWidth > 0 && i.clientHeight === 66)"), "logo du HUB non chargé ou mauvaise taille")
+            couleurs = page.evaluate("""() => {
+                const style = (s) => getComputedStyle(document.querySelector(s));
+                return [style('.carte-graphique > h3').color, style('.donnees-graphique summary').color,
+                        style('.donnees-graphique thead th').backgroundColor, style('.donnees-graphique thead th').color];
+            }""")
+            verifier(couleurs == ["rgb(0, 0, 0)", "rgb(0, 0, 0)", "rgb(255, 192, 0)", "rgb(0, 0, 0)"], f"couleurs du HUB : {couleurs}")
+            lien_hub = page.locator(".pied a", has_text="HUB Bas Carbone")
+            verifier(lien_hub.get_attribute("href") == "https://www.ifpeb.fr/travaux/le-hub-des-prescripteurs-bas-carbone/", "lien du HUB dans le pied de page")
             champ = page.locator("[data-graphique=contributeurs] .parametre-graphique input")
             verifier(champ.count() == 1, "pas de champ de saisie quand l'Ic énergie manque")
             champ.fill("123")
@@ -477,6 +519,24 @@ def main():
             texte_carte = page.inner_text("[data-graphique=contributeurs]")
             verifier("saisi à la main" in texte_carte, "mention de la valeur saisie absente")
             verifier("123" in page.text_content("[data-graphique=contributeurs] table"), "valeur saisie absente du tableau")
+            page.click("[data-onglet=synthese]")
+
+        print("3 quater. Lots à 0 : somme des phases, ou non renseigné sans phases")
+        verifier(nb_lots_nuls > 0, "aucun RSEE de test avec tous les lots à 0")
+        with tempfile.TemporaryDirectory() as tmp:
+            arbre = ET.parse(rsee[0])
+            for lot in arbre.getroot().findall("RSEnv/sortie_projet/batiment/contributeur/composant/lot"):
+                for el in [lot, *lot.findall("sous_lot")]:
+                    el.find("ic").text = "0"
+                    el.remove(el.find("indicateur_co2_dynamique"))
+            fichier = Path(tmp) / "sans_phases.xml"
+            arbre.write(fichier, encoding="utf-8", xml_declaration=True)
+            page.set_input_files("#selecteur", str(fichier))
+            page.wait_for_selector(".noeud")
+            page.click("[data-onglet=composants]")
+            page.locator(".noeud[data-type=batiment]").first.click()
+            verifier("n'est pas renseigné" in page.inner_text("#detail"), "sans phases : mention « non renseigné » absente")
+            verifier(all(l[1] == "–" and l[2] == "–" for l in lire_ic_lots(page)), "sans phases : une valeur est affichée")
             page.click("[data-onglet=synthese]")
 
         print("4. Messages d'erreur")

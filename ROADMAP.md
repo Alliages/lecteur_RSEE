@@ -26,33 +26,37 @@ Seule liste de suivi du projet. Cocher au fil des versions et reporter dans CHAN
 - [ ] Repères du label biosourcé (15, 25, 45 kg C/m²) : vérifier s'ils dépendent de l'usage
 - [ ] Écart entre somme des phases et Ic composants dans 3 RSEE de test sur 14 (de 0,8 à 1,5 %) : origine à comprendre
 
+## À corriger
+- [ ] Onglets à vue large (Indicateurs, Composants, Graphiques) : à 1360 px, les cartes de l'arborescence débordent sur le détail et masquent le début des tableaux (présent depuis au moins la 0.8.12)
+
 ## 0.8.x — socle (outil non fonctionnel)
-- [ ] Structure : index.html, VERSION, README.md, CHANGELOG.md, ROADMAP.md
-- [ ] .gitignore excluant les RSEE (*.xml, *.zip)
-- [ ] Import du fichier XML (sélection + glisser-déposer) et lecture locale
-- [ ] Contrôle du format et message d'erreur clair si le fichier n'est pas un RSEE
+- [x] Structure : index.html, VERSION, README.md, CHANGELOG.md, ROADMAP.md
+- [x] .gitignore excluant les RSEE (*.xml, *.zip)
+- [x] Import du fichier XML (sélection + glisser-déposer) et lecture locale
+- [x] Contrôle du format et message d'erreur clair si le fichier n'est pas un RSEE
 - [x] Arborescence projet / bâtiment / zone (et parcelle), zones reliées à leur bâtiment par un trait, bâtiment et zones encadrés
 
 ## 0.9 — outil fonctionnel
 ### Informations
-- [ ] Projet : opération, n° PC, dates, avancement
-- [ ] Localisation : adresse, cadastre, zone climatique, altitude, zone sismique, sol
-- [ ] Acteurs : MOA, MOE, BET énergie et environnement, bureau de contrôle
-- [ ] Bâtiment / zone : usage, Sref, occupants, logements, niveaux, emprise, parkings
+- [x] Projet : opération, n° PC, dates, avancement
+- [x] Localisation : adresse, cadastre, zone climatique, altitude, zone sismique, sol
+- [x] Acteurs : MOA, MOE, BET énergie et environnement, bureau de contrôle
+- [x] Bâtiment / zone : usage, Sref, occupants, logements, niveaux, emprise, parkings
 - [x] Coefficients de modulation et détail du calcul des seuils
 
 ### Indicateurs
-- [ ] Indicateurs réglementaires avec seuil et écart : Ic construction, Ic énergie, Bbio, Cep, Cep,nr, DH
-- [ ] Indicateurs pédagogiques : Ic composants, énergie, eau, chantier, bâtiment ; StockC ; UDD ; Ic ded
+- [x] Indicateurs réglementaires avec seuil et écart : Ic construction, Ic énergie, Bbio, Cep, Cep,nr, DH
+- [x] Indicateurs pédagogiques : Ic composants, énergie, eau, chantier, bâtiment ; StockC ; UDD ; Ic ded
 - [x] Synthèse visuelle conforme / non conforme, écarts et risques (marge < 10 %, < 5 %)
 - [x] Calcul des seuils en tête de page et lien vers l'outil Seuils RE2020
 - [x] Composition de l'Ic présentée comme une somme
 
 ### Composants
-- [ ] Tableau de tous les composants : nom, quantité, unité, contributeur, lot / sous-lot, fiche (type, id, nom), DVE, impact
-- [ ] Tri par impact, nom, fiche, quantité, position
-- [ ] Filtres : bâtiment / zone / parcelle, contributeur, lot, type de fiche (individuelle, collective, configurée, DED, forfaitaire, DES)
-- [ ] Unités : kg éq. CO₂, /m² Sref, /occupant
+- [x] Tableau de tous les composants : nom, quantité, unité, contributeur, lot / sous-lot, fiche (type, id, nom), DVE
+- [x] Tri par nom, fiche, quantité, position
+- [x] Filtres : bâtiment / zone / parcelle, contributeur, lot, type de donnée
+- [x] Unité : kg éq. CO₂/m²
+- [x] Impacts par lot : somme des phases quand tous les lots valent 0 dans le RSEE
 
 ### Graphiques
 Modèles : graphiques 2 à 8 du dashboard OPEE (Gx ci-dessous), transposés à un seul bâtiment.
@@ -67,12 +71,12 @@ Ordre : contributeurs, lots, écarts aux seuils, sous-lots, types de fiches, nat
 - [x] Nature des fiches par lot en % (FDES, FDES configurée, fiche configurée, PEP, DED, forfaitaire, autres) et part FDES / PEP face à DED + forfaitaire par macro-lot (G6)
 - [x] Écart aux 6 seuils réglementaires en % : Bbio, Cep, Cep,nr, DH, Ic construction, Ic énergie (G7, lien avec la synthèse conforme / non conforme)
 - [x] StockC face aux niveaux du label bâtiment biosourcé (15, 25, 45 kg C/m²) (G8)
-- [ ] Histogramme multi-indicateurs : en attente de la validation de `donnees/indicateurs_acv_RSEE.csv`
+- [x] Logo du HUB en haut à droite de chaque graphique, titres et « Voir les données » en noir, tableau de données en jaune HUB
 
 ## Plus tard (idées)
-- [ ] Impact Ic par composant : recalcul de la pondération dynamique à partir des valeurs par module (point délicat ; Vizcab ne le fait pas pour énergie, chantier, eau ni fiches configurées)
+- [ ] Histogramme multi-indicateurs : en attente de la validation de `donnees/indicateurs_acv_RSEE.csv`
+- [ ] Impact Ic par composant et tri par impact : recalcul de la pondération dynamique à partir des valeurs par module (point délicat ; Vizcab ne le fait pas pour énergie, chantier, eau ni fiches configurées)
 - [ ] Fiches les plus impactantes et distinction individuelle / collective : base INIES embarquée
-- [ ] Onglet Composants : utiliser la somme des phases quand les lots valent 0 (6 RSEE de test sur 14), au lieu de « non renseigné »
 - [ ] Vérification de cohérence du RSEE (règles de base DHUP)
 - [ ] Contrôle des combinaisons de versions Datas_Comp / RSET / RSEnv selon la date de dépôt du PC (tableaux de la page du ministère)
 - [ ] Export CSV du tableau des composants

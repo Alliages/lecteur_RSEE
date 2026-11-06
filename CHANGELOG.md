@@ -1,5 +1,20 @@
 # CHANGELOG — lecteur_RSEE
 
+## 0.9.0 — 2026-11-06
+
+- Composants : quand tous les lots valent 0 dans le RSEE (6 RSEE de test sur 14), l'Ic par lot
+  et sous-lot est la somme des phases du cycle de vie, comme dans les graphiques, avec une
+  note qui le signale. Ic DED affiché ; UDD et StockC restent non renseignés car ils valent
+  aussi 0. Sans phases, l'impact par lot reste « non renseigné ».
+- Graphiques du HUB : logo du HUB en haut à droite de chaque graphique (`images/HUB-BC_logo.png`).
+- Graphiques du HUB : titres et « Voir les données » en noir, en-tête du tableau de données
+  en jaune `#FFC000`.
+- Pied de page : lien vers le HUB Bas Carbone.
+- ROADMAP : fonctions livrées cochées ; impact par composant, filtre individuelle / collective
+  et histogramme multi-indicateurs reportés ; une seule unité, kg éq. CO₂/m².
+- Tests : Ic des lots à 0 comparé à la référence Python, tri, cas sans phases, logo sur chaque
+  graphique, couleurs du HUB, lien du pied de page.
+
 ## 0.8.12 — 2026-11-05
 
 - Arborescence : un trait relie chaque bâtiment à ses zones et un cadre regroupe le bâtiment

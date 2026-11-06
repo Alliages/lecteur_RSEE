@@ -8,7 +8,7 @@
 
 const REGLAGES = {
   // Version affichée (doit rester identique au fichier VERSION)
-  version: "0.8.12",
+  version: "0.9.0",
 
   // Extensions acceptées à l'import
   extensions_acceptees: [".xml"],
