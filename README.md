@@ -3,7 +3,7 @@
 Lecture seule d'un RSEE RE2020 (fichier XML) dans le navigateur.
 
 - Aucun recalcul réglementaire : l'outil affiche les valeurs contenues dans le RSEE.
-- Traitement 100 % local : le fichier ne quitte pas le poste, rien n'est envoyé.
+- Traitement 100 % local : le fichier ne quitte pas le poste. Seuls deux liens, sur clic, ouvrent un site externe : l'outil Seuils RE2020 (données techniques, sans nom ni adresse) et OpenStreetMap (coordonnées GPS).
 - Une page HTML et quelques scripts, hébergée sur GitHub Pages ; seule dépendance : Plotly.js (licence MIT), copié dans `js/`.
 
 Outil en ligne : https://alliages.github.io/lecteur_RSEE/
@@ -21,19 +21,23 @@ La page fonctionne aussi ouverte en local (double-clic sur `index.html`).
 index.html                 page unique
 css/style.css              style (palette et réglages graphiques en tête)
 js/reglages.js             réglages et messages
+js/format.js               mise en forme des nombres
 js/nomenclatures.js        lots et sous-lots RE2020 (issu du CSV ci-dessous)
 js/indicateurs.js          définitions des indicateurs, verdicts (valeur ≤ seuil)
 js/codes.js                libellés des codes du RSEE (issu du CSV)
 js/composants.js           regroupement, filtres et tri des composants
-js/plotly-basic.min.js     bibliothèque de graphiques (Plotly.js basic 2.35.2)
+js/plotly-basic.min.js     bibliothèque de graphiques (Plotly.js basic 2.35.2), chargée à la demande
 js/reglages_graphiques.js  charte HUB et paramètres des graphiques
 js/graphiques.js           calculs des graphiques, sans interface
 js/graphiques_traces.js    tracé des graphiques
 js/reglages_seuils.js      réglages du lien vers l'outil Seuils RE2020
 js/seuils.js               calcul des seuils et lien vers l'outil, sans interface
 js/lecture.js              lecture et contrôle du RSEE, sans interface
-js/interface.js            import, arborescence, détail
-images/                    logo et icône d'onglet (SVG)
+js/interface_commun.js     éléments communs aux onglets
+js/onglet_*.js             un fichier par onglet
+js/interface.js            import, arborescence, navigation entre les onglets
+images/                    logos et icône d'onglet
+docs/                      schéma des indicateurs de la RE2020
 donnees/                   nomenclature des lots et sous-lots, codes du RSEE, indicateurs ACV (CSV)
 tests/                     référence Python et tests dans le navigateur
 ```
@@ -48,7 +52,7 @@ Préparation (une fois), dans PowerShell à la racine du dépôt :
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install playwright
+pip install -r tests\requirements.txt
 python -m playwright install chromium
 ```
 

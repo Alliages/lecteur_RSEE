@@ -14,20 +14,21 @@
 const TracesGraphiques = (() => {
   const R = REGLAGES_GRAPHIQUES;
   const C = CalculsGraphiques;
+  const K = R.couleurs;
+  const D = R.dimensions;
+  const { nombre, signe } = Format;
 
   // Graphiques de lecture : ni barre d'outils ni zoom
   const CONFIG = { responsive: true, displayModeBar: false, scrollZoom: false, doubleClick: false };
 
-  // Largeur en dessous de laquelle les libellés sont raccourcis (téléphone)
-  const LARGEUR_ETROITE = 620;
+  const LARGEUR_ETROITE = R.largeur_etroite;
+
+  // Espace entre les libellés de l'axe vertical et les barres
+  const ECART_LIBELLE = "\u00a0\u00a0";
 
   /* ---------- Outils ---------- */
 
-  const nombre = (n, dec = 0) =>
-    new Intl.NumberFormat(REGLAGES.langue, { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
   const pourcent = (p, dec = 0) => (p === null || p === undefined ? "–" : `${nombre(p * 100, dec)} %`);
-  const signe = (n, dec = 1) =>
-    new Intl.NumberFormat(REGLAGES.langue, { minimumFractionDigits: dec, maximumFractionDigits: dec, signDisplay: "exceptZero" }).format(n);
 
   const propre = (s) => String(s ?? "").replace(/[<>&]/g, " ").replace(/\s+/g, " ").trim();
   const court = (s, n) => (s.length > n ? s.slice(0, Math.max(1, n - 1)) + "…" : s);
@@ -36,8 +37,8 @@ const TracesGraphiques = (() => {
   function miseEnPage(options) {
     return Object.assign({
       font: { family: R.police, size: 13, color: R.couleur_texte },
-      paper_bgcolor: "#FFFFFF",
-      plot_bgcolor: "#FFFFFF",
+      paper_bgcolor: K.blanc,
+      plot_bgcolor: K.blanc,
       separators: R.separateurs,
       dragmode: false,
       hoverlabel: { font: { family: R.police } },
@@ -47,13 +48,10 @@ const TracesGraphiques = (() => {
   const legendeBas = () => ({ orientation: "h", x: 0, y: -0.12, yanchor: "top", traceorder: "normal" });
   const legendeSelon = (largeur, cote) => (largeur < LARGEUR_ETROITE ? legendeBas() : cote);
 
-  // Espace entre les libellés de l'axe vertical et les barres
-  const ECART_LIBELLE = "\u00a0\u00a0";
-
   // Remplissage plein ou hachuré d'une barre
   const remplissage = (def) => ({
     color: def.couleur,
-    line: { color: "#FFFFFF", width: 1 },
+    line: { color: K.blanc, width: 1 },
     ...(def.hachure ? { pattern: { shape: "/", fgcolor: def.hachure, bgcolor: def.couleur, size: 7, solidity: 0.4 } } : {}),
   });
 
@@ -72,8 +70,7 @@ const TracesGraphiques = (() => {
     const donnees = entites.map((e) => C.contributeurs(e.indicateurs, contexte.etat.energie[e.cle]));
     const noms = entites.map((e) => propre(e.nom));
     const n = entites.length;
-    const hauteur = 580;
-    const marges = { l: 70, r: 20, t: 20, b: 60 };
+    const { hauteur, marges } = D.contributeurs;
     const yMax = 1.35 * Math.max(1, ...donnees.map((d) => Math.max(d.total, d.seuil_construction ?? 0)));
     const hauteurTrace = hauteur - marges.t - marges.b;
     const unPixel = yMax / hauteurTrace;
@@ -109,11 +106,11 @@ const TracesGraphiques = (() => {
         shapes.push({
           type: "circle", xref: "x", yref: "y", xsizemode: "pixel", ysizemode: "pixel",
           xanchor: i + demiBarre, yanchor: b.y, x0: 8, x1: 68, y0: -17, y1: 17,
-          fillcolor: b.c.bulle, line: { color: "#9AA0A6", width: 1 },
+          fillcolor: b.c.bulle, line: { color: K.contour_bulle, width: 1 },
         });
         annotations.push({
           x: i + demiBarre, y: b.y, xshift: 38, text: `<b>${pourcent(b.part)}</b>`, showarrow: false,
-          font: { size: 15, color: "#FFFFFF" },
+          font: { size: 15, color: K.blanc },
         });
       }
       // Total au-dessus de la barre (et du trait du seuil s'il passe juste au-dessus), nom sous la barre
@@ -121,11 +118,11 @@ const TracesGraphiques = (() => {
       const seuilProche = seuil !== null && seuil >= d.total && seuil <= d.total + 30 * unPixel;
       annotations.push({
         x: i, y: seuilProche ? seuil : d.total, yanchor: "bottom", yshift: 4, showarrow: false,
-        text: `<span style="font-size:10px;color:#666666">${contexte.type === "zone" ? "Zone" : "Bâtiment"} : </span><b style="font-size:20px">${nombre(d.total)}</b>`,
+        text: `<span style="font-size:10px;color:${K.gris_note}">${contexte.type === "zone" ? "Zone" : "Bâtiment"} : </span><b style="font-size:20px">${nombre(d.total)}</b>`,
       });
       annotations.push({
-        x: i, y: 0, yanchor: "top", yshift: -10, showarrow: false, bgcolor: "#000000", borderpad: 5,
-        text: `<b>${court(noms[i], Math.max(8, Math.floor(largeur / n / 10)))}</b>`, font: { size: 14, color: "#FFFFFF" },
+        x: i, y: 0, yanchor: "top", yshift: -10, showarrow: false, bgcolor: K.noir, borderpad: 5,
+        text: `<b>${court(noms[i], Math.max(8, Math.floor(largeur / n / 10)))}</b>`, font: { size: 14, color: K.blanc },
       });
     });
 
@@ -137,8 +134,8 @@ const TracesGraphiques = (() => {
         line: { color: R.couleur_seuil, width: 3 },
       });
       annotations.push({
-        x: i - 0.29, xanchor: "right", y: d.seuil_construction, showarrow: false, bgcolor: "rgba(255,255,255,0.85)",
-        text: `<b>${nombre(d.seuil_construction)}</b>`, font: { size: 12, color: "#46464E" },
+        x: i - 0.29, xanchor: "right", y: d.seuil_construction, showarrow: false, bgcolor: K.fond_etiquette,
+        text: `<b>${nombre(d.seuil_construction)}</b>`, font: { size: 12, color: K.gris_fonce },
       });
     });
 
@@ -146,14 +143,14 @@ const TracesGraphiques = (() => {
     const xRepere = -0.33;
     shapes.push({
       type: "line", x0: xRepere, x1: xRepere, y0: 0, y1: donnees[0].construction,
-      line: { color: "#9A9A9A", width: 2 },
+      line: { color: K.gris_repere, width: 2 },
     });
     annotations.push({
       x: xRepere, y: donnees[0].construction / 2, xshift: -12, text: "construction", textangle: -90,
-      showarrow: false, font: { size: 15, color: "#46464E" },
+      showarrow: false, font: { size: 15, color: K.gris_fonce },
     });
     // Sol
-    shapes.push({ type: "line", xref: "paper", x0: 0, x1: 1, y0: 0, y1: 0, line: { color: "#000000", width: 4 } });
+    shapes.push({ type: "line", xref: "paper", x0: 0, x1: 1, y0: 0, y1: 0, line: { color: K.noir, width: 4 } });
 
     const notes = [
       "Valeurs arrondies à l'unité, total = somme des arrondis. Parts en % de composants + chantier + énergie (l'eau n'a pas de part). " +
@@ -169,7 +166,7 @@ const TracesGraphiques = (() => {
     return {
       traces,
       layout: miseEnPage({
-        height: hauteur, margin: marges, barmode: "stack", annotations, shapes,
+        height: hauteur, margin: { ...marges }, barmode: "stack", annotations, shapes,
         xaxis: { range: n === 1 ? [-0.9, 1.3] : [-0.75, n - 1 + 0.95], showticklabels: false, showgrid: false, zeroline: false, fixedrange: true },
         yaxis: { title: { text: `<i>${R.unite_ic}</i>` }, range: [0, yMax], showgrid: false, zeroline: false, fixedrange: true },
         showlegend: false,
@@ -205,14 +202,14 @@ const TracesGraphiques = (() => {
 
     const traces = refs.map((r) => ({
       type: "bar", name: `${r}. ${R.lots[r].nom}`, x, y: donnees.map((d) => d.valeurs[r] ?? 0),
-      width: 0.5, marker: { color: R.lots[r].couleur, line: { color: "#FFFFFF", width: 1 } }, customdata: noms,
+      width: 0.5, marker: { color: R.lots[r].couleur, line: { color: K.blanc, width: 1 } }, customdata: noms,
       hovertemplate: `%{customdata}<br>${r}. ${R.lots[r].nom} : %{y:,.1f} ${R.unite_ic}<extra></extra>`,
     }));
     traces.push({
       type: "scatter", mode: "markers+text", name: "Ic composants (RSEE)", x,
       y: entites.map((e) => e.indicateurs.ic_composant ?? null),
       text: entites.map((e) => (e.indicateurs.ic_composant === null || e.indicateurs.ic_composant === undefined ? "" : nombre(e.indicateurs.ic_composant))),
-      textposition: "top center", textfont: { size: 12, color: "#000000" }, marker: { color: "#000000", size: 10 },
+      textposition: "top center", textfont: { size: 12, color: K.noir }, marker: { color: K.noir, size: 10 },
       customdata: noms, hovertemplate: `%{customdata}<br>Ic composants : %{y:,.0f} ${R.unite_ic}<extra></extra>`,
     });
 
@@ -224,12 +221,12 @@ const TracesGraphiques = (() => {
         const dessous = Object.keys(d.valeurs).filter((r) => Number(r) < m.lots[0]).reduce((s, r) => s + d.valeurs[r], 0);
         annotations.push({
           x: x[i], y: dessous + m.valeur / 2, text: `<b>${pourcent(m.part)}</b>`, showarrow: false,
-          font: { size: 13, color: "#FFFFFF" }, bgcolor: m.couleur, borderpad: 3,
+          font: { size: 13, color: K.blanc }, bgcolor: m.couleur, borderpad: 3,
         });
       }
     });
 
-    const notes = ["Impact d'un lot : somme de ses phases dans le RSEE. Étiquettes : gros œuvre (lots 2-3), second œuvre (lots 4-7), lots techniques (lots 8-13), en % hors lot 1."];
+    const notes = ["Impact d'un lot : valeur du RSEE, ou somme de ses phases quand elle vaut 0. Étiquettes : gros œuvre (lots 2-3), second œuvre (lots 4-7), lots techniques (lots 8-13), en % hors lot 1."];
     donnees.forEach((d, i) => {
       if (d.ecart !== null && Math.abs(d.ecart) > R.ecart_lots_alerte) {
         notes.push(`${noms[i]} : la somme des lots (${nombre(d.somme)}) s'écarte de ${signe(d.ecart * 100)} % de l'Ic composants du RSEE (${nombre(entites[i].indicateurs.ic_composant)}).`);
@@ -239,7 +236,7 @@ const TracesGraphiques = (() => {
     return {
       traces,
       layout: miseEnPage({
-        height: largeur < LARGEUR_ETROITE ? 760 : 560, margin: { l: 70, r: 20, t: 20, b: 50 }, barmode: "stack", annotations,
+        height: largeur < LARGEUR_ETROITE ? D.lots.hauteur_etroite : D.lots.hauteur, margin: { ...D.lots.marges }, barmode: "stack", annotations,
         xaxis: { type: "category", fixedrange: true },
         yaxis: { title: { text: R.unite_ic }, rangemode: "tozero", gridcolor: R.couleur_grille, fixedrange: true },
         legend: legendeSelon(largeur, { title: { text: "Lot" }, traceorder: "reversed" }),
@@ -276,13 +273,13 @@ const TracesGraphiques = (() => {
     return {
       traces: [{
         type: "bar", orientation: "h", y: etiquettes, x: lignes.map((l) => l.valeur),
-        marker: { color: lignes.map((l) => R.lots[l.lot]?.couleur ?? "#AAAAB2"), line: { color: "#46464E", width: 0.5 } },
+        marker: { color: lignes.map((l) => R.lots[l.lot]?.couleur ?? K.lot_inconnu), line: { color: K.gris_fonce, width: 0.5 } },
         text: lignes.map((l) => `${nombre(l.valeur)}${ic ? ` · ${pourcent(l.valeur / ic)}` : ""}`),
         textposition: "outside", cliponaxis: false, customdata: noms,
         hovertemplate: `%{customdata}<br>%{x:,.1f} ${R.unite_ic}<extra></extra>`,
       }],
       layout: miseEnPage({
-        height: 110 + 30 * lignes.length, margin: { l: 10, r: 90, t: 10, b: 50 },
+        height: D.sous_lots.base + D.sous_lots.ligne * lignes.length, margin: { ...D.sous_lots.marges },
         xaxis: { title: { text: R.unite_ic }, rangemode: "tozero", gridcolor: R.couleur_grille, fixedrange: true },
         yaxis: { type: "category", autorange: "reversed", automargin: true, ticksuffix: ECART_LIBELLE, fixedrange: true },
       }),
@@ -313,7 +310,7 @@ const TracesGraphiques = (() => {
         customdata: noms, hovertemplate: `%{customdata}<br>${t.libelle} : %{y:,.0f} fiches<extra></extra>`,
       })),
       layout: miseEnPage({
-        height: 500, margin: { l: 70, r: 20, t: 40, b: 50 }, barmode: "stack",
+        height: D.types.hauteur, margin: { ...D.types.marges }, barmode: "stack",
         uniformtext: { mode: "hide", minsize: 10 },
         xaxis: { type: "category", fixedrange: true },
         yaxis: { title: { text: "Nombre de fiches" }, rangemode: "tozero", gridcolor: R.couleur_grille, fixedrange: true },
@@ -351,7 +348,7 @@ const TracesGraphiques = (() => {
       type: "bar", orientation: "h", name: n.libelle, y, x: lignes.map((l) => l.parts[n.cle]),
       marker: {
         ...remplissage(n),
-        line: { color: "rgba(137,135,129,0.5)", width: 0.5 },
+        line: { color: K.trait_segment, width: 0.5 },
       },
       text: lignes.map((l) => (l.parts[n.cle] >= R.part_minimale_etiquette ? `${nombre(l.parts[n.cle])} %` : "")),
       textposition: "inside", insidetextanchor: "middle", textangle: 0, textfont: { size: 12, color: n.texte },
@@ -362,11 +359,11 @@ const TracesGraphiques = (() => {
     // Colonne à droite du tracé : nombre de fiches (moyenne par bâtiment pour un projet)
     const annotations = lignes.map((l, i) => ({
       x: 1.015, xref: "paper", xanchor: "left", y: y[i], text: nombre(l.moyenne, decimales),
-      showarrow: false, font: { color: "#898781" },
+      showarrow: false, font: { color: K.gris_fiches },
     }));
     annotations.push({
       x: 1.015, xref: "paper", xanchor: "left", y: 1, yref: "paper", yanchor: "bottom", showarrow: false,
-      text: plusieurs ? "Fiches moy.<br>par bât." : "Fiches", font: { size: 11, color: "#898781" },
+      text: plusieurs ? "Fiches moy.<br>par bât." : "Fiches", font: { size: 11, color: K.gris_fiches },
     });
 
     const notes = [];
@@ -378,7 +375,7 @@ const TracesGraphiques = (() => {
     return {
       traces,
       layout: miseEnPage({
-        height: Math.max(460, 34 * lignes.length + 260), margin: { l: 10, r: 70, t: 40, b: 60 },
+        height: Math.max(D.natures.minimum, D.natures.ligne * lignes.length + D.natures.base), margin: { ...D.natures.marges },
         barmode: "stack", bargap: 0.35, annotations, uniformtext: { mode: "hide", minsize: 9 },
         xaxis: { title: { text: "% du nombre de fiches" }, range: [0, 100], gridcolor: R.couleur_grille, fixedrange: true },
         yaxis: { type: "category", autorange: "reversed", automargin: true, ticksuffix: ECART_LIBELLE, fixedrange: true },
@@ -430,7 +427,7 @@ const TracesGraphiques = (() => {
         const points = donnees.map((d, i) => ({ d: d[k], nom: noms[i] })).filter((p) => p.d.ecart !== null);
         return {
           type: "scatter", mode: "markers", name: e.libelle, y: points.map(() => e.libelle), x: points.map((p) => p.d.ecart),
-          marker: { color: e.couleur, size: 13, line: { color: "#FFFFFF", width: 1.5 } },
+          marker: { color: e.couleur, size: 13, line: { color: K.blanc, width: 1.5 } },
           customdata: points.map((p) => `${p.nom}<br>${survol(p.d)}`),
           hovertemplate: "%{customdata}<br>Écart : %{x:.1f} %<extra></extra>",
         };
@@ -445,13 +442,13 @@ const TracesGraphiques = (() => {
     return {
       traces,
       layout: miseEnPage({
-        height: 420, margin: { l: 10, r: 30, t: 40, b: 50 }, showlegend: false,
+        height: D.ecarts.hauteur, margin: { ...D.ecarts.marges }, showlegend: false,
         xaxis: { title: { text: "Écart au seuil (%)" }, range: [-borne, borne], gridcolor: R.couleur_grille, zeroline: false, ticksuffix: " %", fixedrange: true },
         yaxis: { type: "category", categoryorder: "array", categoryarray: libelles, autorange: "reversed", automargin: true, gridcolor: R.couleur_grille, fixedrange: true },
-        shapes: [{ type: "line", yref: "paper", x0: 0, x1: 0, y0: 0, y1: 1, line: { color: "#46464E", width: 1.5, dash: "dot" } }],
+        shapes: [{ type: "line", yref: "paper", x0: 0, x1: 0, y0: 0, y1: 1, line: { color: K.gris_fonce, width: 1.5, dash: "dot" } }],
         annotations: [
-          { x: 0, xshift: -8, xanchor: "right", y: 1, yref: "paper", yanchor: "bottom", text: "← sous le seuil", showarrow: false, font: { size: 12, color: "#46464E" } },
-          { x: 0, xshift: 8, xanchor: "left", y: 1, yref: "paper", yanchor: "bottom", text: "au-dessus du seuil →", showarrow: false, font: { size: 12, color: "#46464E" } },
+          { x: 0, xshift: -8, xanchor: "right", y: 1, yref: "paper", yanchor: "bottom", text: "← sous le seuil", showarrow: false, font: { size: 12, color: K.gris_fonce } },
+          { x: 0, xshift: 8, xanchor: "left", y: 1, yref: "paper", yanchor: "bottom", text: "au-dessus du seuil →", showarrow: false, font: { size: 12, color: K.gris_fonce } },
         ],
       }),
       tableau: {
@@ -487,7 +484,7 @@ const TracesGraphiques = (() => {
         hovertemplate: `%{customdata}<br>StockC : %{x:.1f} ${R.unite_stock}<extra></extra>`,
       }],
       layout: miseEnPage({
-        height: 230 + 44 * presents.length, margin: { l: 10, r: 30, t: 76, b: 50 }, showlegend: false, annotations,
+        height: D.stock.base + D.stock.ligne * presents.length, margin: { ...D.stock.marges }, showlegend: false, annotations,
         shapes: S.reperes.map((r) => ({
           type: "line", yref: "paper", x0: r.valeur, x1: r.valeur, y0: 0, y1: 1,
           line: { color: S.couleur_repere, width: 1.5, dash: "dot" },

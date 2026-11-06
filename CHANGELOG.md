@@ -1,5 +1,28 @@
 # CHANGELOG — lecteur_RSEE
 
+## 0.9.3 — 2026-11-06
+
+Corrections de l'audit du dépôt.
+
+- Sécurité : politique CSP dans `index.html` (aucune connexion possible, scripts et images
+  locaux). `.gitignore` : dossier `RSEE/` et `*.pdf`.
+- Impact d'un lot ou d'un sous-lot : une seule règle (`CalculsGraphiques.impactLot`), `<ic>`
+  puis somme des phases s'il vaut 0, pour le tableau, les graphiques et le lien Seuils. Les
+  sous-lots 9.1 et 8.7 de 3 RSEE de test, qui ont un Ic sans phases, ne sont plus à 0.
+- Arborescence : un nom long passe à la ligne au lieu de recouvrir le détail.
+- Lien OpenStreetMap : note à l'écran et `noreferrer` ; README précisé sur les deux liens externes.
+- Code : `js/format.js` pour les nombres, utilitaire de tableau, table unique des coefficients
+  dans `js/reglages_seuils.js`, unités et constantes regroupées dans les fichiers de réglages,
+  dimensions et couleurs des graphiques dans `js/reglages_graphiques.js`.
+- `js/interface.js` découpé : `js/interface_commun.js` et un fichier `js/onglet_*.js` par onglet.
+- Plotly chargé à la première ouverture de l'onglet Graphiques, logo du HUB réduit à sa taille
+  d'affichage.
+- Graphiques libérés quand l'ouverture d'un fichier échoue ; `doc` inutilisé retiré de la lecture.
+- Tests : `tests/requirements.txt`, attente sans `eval` (compatible CSP), connexion bloquée,
+  arborescence dans sa colonne, règle d'impact, ouverture de fichier sans course.
+- Schéma des indicateurs déplacé dans `docs/`.
+- Informations : libellé de la phase du projet (Programmation, Conception, Réalisation, Exploitation).
+
 ## 0.9.1 — 2026-11-06
 
 - En-tête : un clic sur le logo ou sur « lecteur.RSEE » ne fait plus rien (il rechargeait la

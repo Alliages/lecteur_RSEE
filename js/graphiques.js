@@ -4,9 +4,9 @@
    Aucun recalcul réglementaire : on additionne, on compte et on compare
    des valeurs lues dans le RSEE.
 
-   Impact d'un lot ou d'un sous-lot : somme des phases de
-   <indicateur_co2_dynamique>, car la balise <ic> vaut 0 pour tous les lots
-   dans une partie des RSEE. Bexp (énergie exportée) n'entre pas dans l'Ic.
+   Impact d'un lot ou d'un sous-lot : balise <ic>, ou somme des phases de
+   <indicateur_co2_dynamique> quand elle vaut 0 (tous les lots d'un bâtiment,
+   dans une partie des RSEE). Bexp (énergie exportée) n'entre pas dans l'Ic.
    ===================================================================== */
 
 "use strict";
@@ -18,6 +18,12 @@ const CalculsGraphiques = (() => {
   function sommePhases(phases) {
     const valeurs = R.phases_ic.map((p) => phases?.[p]).filter((v) => v !== null && v !== undefined);
     return valeurs.length ? valeurs.reduce((s, v) => s + v, 0) : null;
+  }
+
+  // Impact d'un lot ou d'un sous-lot : seule règle de l'outil. <ic> prime, car certains
+  // sous-lots ont un <ic> sans aucune phase (9.1, 8.7). null si rien n'est renseigné.
+  function impactLot(lot) {
+    return lot?.ic || (sommePhases(lot?.phases) ?? lot?.ic ?? null);
   }
 
   /* ---------- Contributeurs ---------- */
@@ -57,7 +63,7 @@ const CalculsGraphiques = (() => {
     const valeurs = {};
     for (const [ref, lot] of Object.entries(impacts || {})) {
       if (!(ref in R.lots)) continue; // hors nomenclature : signalé par le contrôle du fichier
-      valeurs[ref] = sommePhases(lot.phases) ?? lot.ic ?? 0;
+      valeurs[ref] = impactLot(lot) ?? 0;
     }
     const somme = Object.values(valeurs).reduce((s, v) => s + v, 0);
     const sommeGroupe = (refs) => refs.reduce((s, r) => s + (valeurs[r] || 0), 0);
@@ -78,10 +84,10 @@ const CalculsGraphiques = (() => {
   function topSousLots(impacts, n) {
     const lignes = [];
     for (const [ref, lot] of Object.entries(impacts || {})) {
-      const valeurLot = sommePhases(lot.phases) ?? lot.ic ?? 0;
+      const valeurLot = impactLot(lot) ?? 0;
       let detaille = 0;
       for (const [refSous, sous] of Object.entries(lot.sous_lots || {})) {
-        const valeur = sommePhases(sous.phases) ?? sous.ic ?? 0;
+        const valeur = impactLot(sous) ?? 0;
         detaille += valeur;
         lignes.push({ lot: ref, sous_lot: refSous, valeur, non_detaille: false });
       }
@@ -216,7 +222,7 @@ const CalculsGraphiques = (() => {
   const stockC = (ind) => ind.stock_c_batiment ?? ind.stock_c ?? null;
 
   return {
-    sommePhases, contributeurs, lots, topSousLots, estForfaitaire, natureFiche, typeFiche,
+    sommePhases, impactLot, contributeurs, lots, topSousLots, estForfaitaire, natureFiche, typeFiche,
     compterTypes, naturesParLot, fichesMacroLots, ecartsSeuils, niveauMarge, stockC,
   };
 })();

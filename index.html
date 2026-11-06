@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lecteur RSEE</title>
   <meta name="description" content="Lecture d'un RSEE RE2020 dans le navigateur, sans envoi du fichier.">
+  <!-- Garantit que la page ne peut rien envoyer : aucune connexion, scripts et images locaux seulement -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
   <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -66,17 +68,23 @@
 
   <!-- Scripts classiques (pas de modules) : la page fonctionne aussi ouverte en local -->
   <script src="js/reglages.js"></script>
+  <script src="js/format.js"></script>
   <script src="js/nomenclatures.js"></script>
   <script src="js/codes.js"></script>
   <script src="js/indicateurs.js"></script>
   <script src="js/composants.js"></script>
-  <script src="js/plotly-basic.min.js"></script>
   <script src="js/reglages_graphiques.js"></script>
   <script src="js/graphiques.js"></script>
   <script src="js/graphiques_traces.js"></script>
   <script src="js/reglages_seuils.js"></script>
   <script src="js/seuils.js"></script>
   <script src="js/lecture.js"></script>
+  <script src="js/interface_commun.js"></script>
+  <script src="js/onglet_synthese.js"></script>
+  <script src="js/onglet_informations.js"></script>
+  <script src="js/onglet_indicateurs.js"></script>
+  <script src="js/onglet_composants.js"></script>
+  <script src="js/onglet_graphiques.js"></script>
   <script src="js/interface.js"></script>
 </body>
 </html>

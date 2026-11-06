@@ -308,7 +308,7 @@ def nature_reference(type_donnees, nom, lot):
 def graphiques_reference(chemin_fichier):
     """Valeurs attendues dans les graphiques, par index de bâtiment.
 
-    Lots : somme des phases ; macro-lots hors lot 1.
+    Lots : <ic>, ou somme des phases s'il vaut 0 ; macro-lots hors lot 1.
     Fiches comptées ligne à ligne, sans regroupement.
     """
     racine = ET.parse(chemin_fichier).getroot()
@@ -318,7 +318,7 @@ def graphiques_reference(chemin_fichier):
     for b in sortie.findall("batiment"):
         index = texte(b, "index")
         perf = b.find("indicateur_perf_env")
-        lots = {l.get("ref"): phases_ic(l) for l in b.findall("contributeur/composant/lot")}
+        lots = {l.get("ref"): nombre(l, "ic") or phases_ic(l) for l in b.findall("contributeur/composant/lot")}
         groupes = {"gros": [2, 3], "second": [4, 5, 6, 7], "techniques": list(range(8, 14))}
         hors_vrd = sum(v for r, v in lots.items() if int(r) >= 2)
         macro = {k: sum(lots.get(str(r), 0) for r in refs) / hors_vrd for k, refs in groupes.items()}

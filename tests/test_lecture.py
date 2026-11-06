@@ -74,6 +74,22 @@ def comparer(js, ref, chemin=""):
         verifier(egal(js, ref), f"{chemin} : JS={js!r} référence={ref!r}")
 
 
+def attendre(page, expression, delai_ms=20000):
+    """Attend qu'une expression soit vraie. page.wait_for_function passe par eval, que la CSP de la page interdit."""
+    for _ in range(delai_ms // 50):
+        if page.evaluate(expression):
+            return
+        page.wait_for_timeout(50)
+    raise TimeoutError(expression)
+
+
+def ouvrir_rsee(page, fichier):
+    """Ouvre un fichier et attend la nouvelle arborescence (l'ancienne reste affichée pendant la lecture)."""
+    page.evaluate("document.querySelector('.noeud').dataset.ancien = '1'")
+    page.set_input_files("#selecteur", str(fichier))
+    attendre(page, "document.querySelector('.noeud') && !document.querySelector('.noeud[data-ancien]')")
+
+
 def lire_ic_lots(page):
     """Lots affichés dans l'onglet Composants : [référence, Ic, Ic DED, UDD, StockC] en texte."""
     return page.evaluate("""() => [...document.querySelectorAll('.tableau-lots tr.ligne-lot')].map(tr => {
@@ -117,7 +133,10 @@ def main():
         page = navigateur.new_page(viewport={"width": LARGEUR_ECRAN, "height": 900})
         messages_console = []
         page.on("pageerror", lambda e: messages_console.append(str(e)))
+        page.on("console", lambda m: "Content Security Policy" in m.text and messages_console.append(m.text))
         page.goto((RACINE / "index.html").as_uri())
+
+        verifier(page.evaluate("typeof Plotly") == "undefined", "Plotly chargé avant l'ouverture des graphiques")
 
         print("1. Version")
         version_js = page.evaluate("REGLAGES.version")
@@ -145,7 +164,7 @@ def main():
             verifier(fond == attendu_s, f"survol de l'onglet {onglet} : {fond}")
 
         print("1 bis. Logo et icône d'onglet")
-        page.wait_for_function("document.querySelector('.logo-marque').complete")
+        attendre(page, "document.querySelector('.logo-marque').complete")
         verifier(page.evaluate("document.querySelector('.logo-marque').naturalWidth") > 0, "logo non chargé")
         icone = page.get_attribute("link[rel=icon]", "href")
         verifier(icone is not None and (RACINE / icone).is_file(), "icône d'onglet introuvable")
@@ -247,7 +266,7 @@ def main():
             # Affichage : import par le sélecteur de fichier, comme un utilisateur
             page.set_input_files("#selecteur", str(chemin))
             nb_attendu = 1 + len(attendu["batiments"]) + sum(len(b["zones"]) for b in attendu["batiments"]) + len(attendu["parcelles"])
-            page.wait_for_function(f"document.querySelectorAll('.noeud').length === {nb_attendu}", timeout=20000)
+            attendre(page, f"document.querySelectorAll('.noeud').length === {nb_attendu}")
             verifier(page.is_hidden("#message"), f"{chemin.name} : message d'erreur affiché")
             page.screenshot(path=str(DOSSIER_CAPTURES / (chemin.stem + ".png")), full_page=True)
 
@@ -350,7 +369,13 @@ def main():
                 if noeuds.count():
                     noeuds.first.click()
                     verifier(page.locator("#detail .infos").count() > 0, f"{chemin.name} : Informations vide ({type_noeud})")
+                    for rel in page.eval_on_selector_all("a[href*='openstreetmap']", "l => l.map(a => a.rel)"):
+                        verifier("noreferrer" in rel, f"{chemin.name} : lien OpenStreetMap sans noreferrer")
+                        verifier("OpenStreetMap" in page.inner_text("#detail"), f"{chemin.name} : note OpenStreetMap absente")
             page.locator(".noeud[data-type=projet]").click()
+            libelle_phase = {"1": "Programmation", "2": "Conception", "3": "Réalisation", "4": "Exploitation"}.get(modele["projet"]["phase"])
+            attendu_phase = f"{libelle_phase} code {modele['projet']['phase']}" if libelle_phase else f"code {modele['projet']['phase']}"
+            verifier(attendu_phase in page.inner_text("#detail").replace("\n", " "), f"{chemin.name} : phase du projet, attendu {attendu_phase}")
             page.screenshot(path=str(DOSSIER_CAPTURES / (chemin.stem + "_informations.png")), full_page=True)
 
             # Onglet Composants : nombre de lignes affichées et tableau des lots
@@ -376,6 +401,11 @@ def main():
                     ic_lus = [lire_nombre(l[1]) for l in lignes_lots]
                     verifier(ic_lus == sorted(ic_lus, reverse=True), f"{chemin.name} : lots non triés par impact")
                 if i == 0:
+                    # L'arborescence reste dans sa colonne, même avec un nom long
+                    bord_arbre, bord_detail = page.evaluate("""() => [
+                        Math.max(...[...document.querySelectorAll('.noeud')].map(n => n.getBoundingClientRect().right)),
+                        document.querySelector('#detail').getBoundingClientRect().left]""")
+                    verifier(bord_arbre <= bord_detail, f"{chemin.name} : l'arborescence déborde sur le détail")
                     page.screenshot(path=str(DOSSIER_CAPTURES / (chemin.stem + "_composants.png")), full_page=True)
             z = modele["batiments"][0]["zones"][0]
             page.locator(".noeud[data-type=zone]").first.click()
@@ -428,9 +458,10 @@ def main():
 
             page.click("[data-onglet=graphiques]")
             page.locator(".noeud[data-type=projet]").click()
+            attendre(page, "typeof Plotly !== 'undefined' && document.querySelector('.carte-graphique')")
             nb_proj = 6 if len(modele["batiments"]) > 1 else 7  # un seul bâtiment : mêmes graphiques que sa vue
             verifier(page.locator(".carte-graphique").count() == nb_proj, f"{chemin.name} : graphiques du projet")
-            page.wait_for_function("document.querySelectorAll('.graphique.avec-trace .main-svg').length > 0")
+            attendre(page, "document.querySelectorAll('.graphique.avec-trace .main-svg').length > 0")
             page.screenshot(path=str(DOSSIER_CAPTURES / (chemin.stem + "_graphiques_projet.png")), full_page=True)
             for i, b in enumerate(modele["batiments"]):
                 page.locator(".noeud[data-type=batiment]").nth(i).click()
@@ -495,14 +526,13 @@ def main():
             perf.remove(perf.find("ic_energie"))
             fichier = Path(tmp) / "sans_energie.xml"
             arbre.write(fichier, encoding="utf-8", xml_declaration=True)
-            page.set_input_files("#selecteur", str(fichier))
-            page.wait_for_selector(".noeud")
+            ouvrir_rsee(page, fichier)
             page.click("[data-onglet=graphiques]")
             page.locator(".noeud[data-type=batiment]").first.click()
             # Logo du HUB (fichier local) sur chaque graphique ; titres et données aux couleurs du HUB
             nb_cartes = page.locator(".carte-graphique").count()
             verifier(nb_cartes > 0 and page.locator(".carte-graphique > img.logo-hub").count() == nb_cartes, "logo du HUB absent d'un graphique")
-            page.wait_for_function("[...document.querySelectorAll('.logo-hub')].every(i => i.complete)")
+            attendre(page, "[...document.querySelectorAll('.logo-hub')].every(i => i.complete)")
             verifier(page.evaluate("[...document.querySelectorAll('.logo-hub')].every(i => i.naturalWidth > 0 && i.clientHeight === 86 && getComputedStyle(i).zIndex === '5')"), "logo du HUB non chargé ou mauvaise taille")
             couleurs = page.evaluate("""() => {
                 const style = (s) => getComputedStyle(document.querySelector(s));
@@ -523,6 +553,8 @@ def main():
             page.click("[data-onglet=synthese]")
 
         print("3 quater. Lots à 0 : somme des phases, ou non renseigné sans phases")
+        for lot, attendu_i in [({"ic": 5, "phases": {"B": 1}}, 5), ({"ic": 0, "phases": {"B": 1}}, 1), ({"ic": 0, "phases": {}}, 0), (None, None)]:
+            verifier(page.evaluate("l => CalculsGraphiques.impactLot(l)", lot) == attendu_i, f"impactLot({lot})")
         verifier(nb_lots_nuls > 0, "aucun RSEE de test avec tous les lots à 0")
         with tempfile.TemporaryDirectory() as tmp:
             arbre = ET.parse(rsee[0])
@@ -532,8 +564,7 @@ def main():
                     el.remove(el.find("indicateur_co2_dynamique"))
             fichier = Path(tmp) / "sans_phases.xml"
             arbre.write(fichier, encoding="utf-8", xml_declaration=True)
-            page.set_input_files("#selecteur", str(fichier))
-            page.wait_for_selector(".noeud")
+            ouvrir_rsee(page, fichier)
             page.click("[data-onglet=composants]")
             page.locator(".noeud[data-type=batiment]").first.click()
             verifier("n'est pas renseigné" in page.inner_text("#detail"), "sans phases : mention « non renseigné » absente")
@@ -584,6 +615,13 @@ def main():
         verifier(largeur <= 390, f"défilement horizontal dans les graphiques sur téléphone ({largeur}px)")
 
         verifier(not messages_console, "erreurs JavaScript : " + " | ".join(messages_console))
+
+        print("6. CSP : la page ne peut rien envoyer")
+        directive = page.evaluate("""() => new Promise((fin) => {
+            document.addEventListener('securitypolicyviolation', (e) => fin(e.effectiveDirective), { once: true });
+            fetch('https://exemple.invalid/').catch(() => {});
+        })""")
+        verifier(directive == "connect-src", f"connexion non bloquée par la CSP ({directive})")
         navigateur.close()
 
     print()

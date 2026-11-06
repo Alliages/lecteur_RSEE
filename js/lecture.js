@@ -567,8 +567,7 @@ const LectureRSEE = (() => {
     }
 
     modele.alertes = controlerCoherence(modele, noms).concat(alertesIndicateurs);
-    // Le document est conservé pour d'éventuelles lectures complémentaires
-    return { modele, doc: controle.doc };
+    return { modele };
   }
 
   return { decoder, estZip, controler, analyser };

@@ -5,6 +5,7 @@
    statut « déduit » : libellé déduit des noms de fiches d'un corpus de
    RSEE, pas d'une documentation officielle — à valider. Le code est
    toujours affiché à côté du libellé. Un code absent reste affiché brut.
+   statut « documenté » : libellé repris d'une description du format.
    ===================================================================== */
 
 "use strict";
@@ -33,6 +34,12 @@ const CODES_RSEE = {
     "1": { libelle: "Maison individuelle ou accolée", statut: "déduit" },
     "2": { libelle: "Logement collectif", statut: "déduit" },
     "3": { libelle: "Bureaux", statut: "déduit" },
+  },
+  phase: {
+    "1": { libelle: "Programmation", statut: "documenté" },
+    "2": { libelle: "Conception", statut: "documenté" },
+    "3": { libelle: "Réalisation", statut: "documenté" },
+    "4": { libelle: "Exploitation", statut: "documenté" },
   },
   contributeur: {
     "composant": { libelle: "Composants", statut: "balise" },

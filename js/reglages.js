@@ -1,14 +1,15 @@
 /* =====================================================================
    lecteur_RSEE — réglages
-   Tous les paramètres modifiables de l'outil sont regroupés ici.
-   Les couleurs sont dans css/style.css (variables en tête de fichier).
+   Paramètres généraux de l'outil. Les autres réglages sont dans
+   js/reglages_graphiques.js (graphiques) et js/reglages_seuils.js (seuils) ;
+   les couleurs de l'interface dans css/style.css (variables en tête de fichier).
    ===================================================================== */
 
 "use strict";
 
 const REGLAGES = {
   // Version affichée (doit rester identique au fichier VERSION)
-  version: "0.9.1",
+  version: "0.9.3",
 
   // Extensions acceptées à l'import
   extensions_acceptees: [".xml"],
@@ -30,6 +31,30 @@ const REGLAGES = {
   // Format des nombres affichés
   langue: "fr-FR",
   decimales_surface: 1,
+
+  // Unité des Ic dans les onglets (celle des graphiques est dans js/reglages_graphiques.js)
+  unite_ic: "kg éq. CO₂/m²",
+
+  // Titre du panneau de droite selon l'onglet actif
+  titres_onglets: {
+    synthese: "Synthèse", informations: "Informations", indicateurs: "Indicateurs", composants: "Composants",
+    graphiques: "Graphiques du HUB",
+  },
+
+  // Libellés des statuts : verdict réglementaire (bâtiment, groupe DH)
+  // ou simple comparaison au seuil (zone, donnée pour information)
+  libelles_statut: {
+    reglementaire: { conforme: "Conforme", depasse: "Non conforme", absent: "Non renseigné" },
+    information: { conforme: "Sous le seuil", depasse: "Au-dessus du seuil", absent: "Non renseigné" },
+  },
+  symboles_statut: { conforme: "✓", depasse: "✕", absent: "–" },
+
+  // Somme de l'Ic signalée si l'écart dépasse la plus grande de ces tolérances (arrondis exclus)
+  tolerance_somme: { absolue: 0.5, relative: 0.002 },
+
+  // Place laissée au-delà de la plus grande valeur : barres d'écart et jauges
+  echelle_ecarts: 1.05,
+  echelle_jauge: 1.15,
 
   // Libellés des messages d'erreur à l'import
   messages: {

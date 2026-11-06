@@ -16,6 +16,37 @@ const REGLAGES_GRAPHIQUES = {
   unite_ic: "kgCO₂e/m² sur 50 ans",
   unite_stock: "kg C/m² SDP",
 
+  // Couleurs communes des tracés (hors palette des lots et contributeurs)
+  couleurs: {
+    blanc: "#FFFFFF",
+    noir: "#000000",
+    gris_fonce: "#46464E",
+    gris_repere: "#9A9A9A",
+    gris_note: "#666666",
+    gris_fiches: "#898781",
+    contour_bulle: "#9AA0A6",
+    lot_inconnu: "#AAAAB2",
+    fond_etiquette: "rgba(255,255,255,0.85)",
+    trait_segment: "rgba(137,135,129,0.5)",
+  },
+
+  // Largeur en dessous de laquelle les libellés sont raccourcis (téléphone)
+  largeur_etroite: 620,
+
+  // Hauteurs (px) et marges de chaque graphique ; base + ligne × nombre de lignes si la hauteur varie
+  dimensions: {
+    contributeurs: { hauteur: 580, marges: { l: 70, r: 20, t: 20, b: 60 } },
+    lots: { hauteur: 560, hauteur_etroite: 760, marges: { l: 70, r: 20, t: 20, b: 50 } },
+    sous_lots: { base: 110, ligne: 30, marges: { l: 10, r: 90, t: 10, b: 50 } },
+    types: { hauteur: 500, marges: { l: 70, r: 20, t: 40, b: 50 } },
+    natures: { minimum: 460, base: 260, ligne: 34, marges: { l: 10, r: 70, t: 40, b: 60 } },
+    ecarts: { hauteur: 420, marges: { l: 10, r: 30, t: 40, b: 50 } },
+    stock: { base: 230, ligne: 44, marges: { l: 10, r: 30, t: 76, b: 50 } },
+  },
+
+  // Bibliothèque de graphiques, chargée à la première ouverture de l'onglet
+  script_plotly: "js/plotly-basic.min.js",
+
   // Logo affiché en haut à droite de chaque graphique
   logo_hub: "images/HUB-BC_logo.png",
 

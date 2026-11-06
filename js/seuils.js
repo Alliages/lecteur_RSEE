@@ -9,26 +9,26 @@
 const CalculSeuils = (() => {
   const R = REGLAGES_SEUILS;
 
-  // Formule : moyen × (1 + termes du produit) + termes ajoutés. [balise, libellé]
+  // Formule : moyen × (1 + termes du produit) + termes ajoutés (balises du RSEE)
   const FORMULES = {
     ic_construction: {
-      libelle: "Ic construction max", unite: "kg éq. CO₂/m²",
-      produit: [["micombles", "Mi combles"], ["misurf", "Mi surf"], ["misurf_moy", "Mi surf moy"], ["misurf_tot", "Mi surf tot"]],
-      ajout: [["migeo", "Mi géo"], ["miinfra", "Mi infra"], ["mivrd", "Mi VRD"], ["mipv", "Mi PV"], ["mided", "Mi DED"]],
+      libelle: "Ic construction max", unite: REGLAGES.unite_ic,
+      produit: ["micombles", "misurf", "misurf_moy", "misurf_tot"],
+      ajout: ["migeo", "miinfra", "mivrd", "mipv", "mided"],
     },
     ic_energie: {
-      libelle: "Ic énergie max", unite: "kg éq. CO₂/m²",
-      produit: [["mcgeo", "Mc géo"], ["mccombles", "Mc combles"], ["mcsurf_moy", "Mc surf moy"], ["mcsurf_tot", "Mc surf tot"], ["mccat", "Mc cat"]],
+      libelle: "Ic énergie max", unite: REGLAGES.unite_ic,
+      produit: ["mcgeo", "mccombles", "mcsurf_moy", "mcsurf_tot", "mccat"],
       ajout: [],
     },
     bbio: {
       libelle: "Bbio max", unite: "points",
-      produit: [["O_Mbgeo", "Mb géo"], ["O_Mbcombles", "Mb combles"], ["O_Mbsurf_moy", "Mb surf moy"], ["O_Mbsurf_tot", "Mb surf tot"], ["O_Mbbruit", "Mb bruit"]],
+      produit: ["O_Mbgeo", "O_Mbcombles", "O_Mbsurf_moy", "O_Mbsurf_tot", "O_Mbbruit"],
       ajout: [],
     },
     cep: {
       libelle: "Cep max", unite: "kWhep/m²/an",
-      produit: [["O_Mcgeo", "Mc géo"], ["O_Mccombles", "Mc combles"], ["O_Mcsurf_moy", "Mc surf moy"], ["O_Mcsurf_tot", "Mc surf tot"], ["O_Mccat", "Mc cat"]],
+      produit: ["O_Mcgeo", "O_Mccombles", "O_Mcsurf_moy", "O_Mcsurf_tot", "O_Mccat"],
       ajout: [],
     },
   };
@@ -36,8 +36,8 @@ const CalculSeuils = (() => {
 
   // Termes non nuls d'une liste de coefficients
   const termes = (coefs, liste) => liste
-    .filter(([balise]) => coefs[balise])
-    .map(([balise, libelle]) => ({ libelle, valeur: coefs[balise] }));
+    .filter((balise) => coefs[balise])
+    .map((balise) => ({ libelle: R.libelles_coefficients[balise], valeur: coefs[balise] }));
   const somme = (liste) => liste.reduce((s, t) => s + t.valeur, 0);
 
   // Équation d'un seuil. Sans valeur moyenne dans le RSEE (Bbio, Cep, Cep,nr),
@@ -90,12 +90,8 @@ const CalculSeuils = (() => {
     return Array.from(new Set(liste));
   }
 
-  // Impact d'un lot, pour le lien (somme des phases quand le champ ic vaut 0)
-  function impactLot(source, ref) {
-    const lot = source.impacts_lots?.[ref];
-    if (!lot) return null;
-    return lot.ic || CalculsGraphiques.sommePhases(lot.phases) || null;
-  }
+  // Impact d'un lot pour le lien : omis s'il est nul
+  const impactDuLien = (source, ref) => CalculsGraphiques.impactLot(source.impacts_lots?.[ref]) || null;
 
   // Période de dépôt du PC au sens de l'outil
   function periode(datePC) {
@@ -136,8 +132,8 @@ const CalculSeuils = (() => {
       bruit: bruitModule && [1, 2, 3].includes(p.bruit) ? "BR" + p.bruit : null,
       clim: oui(p.climatise),
       rcu: oui(p.reseau_chaleur),
-      lot1: impactLot(source, "1"),
-      lot2: impactLot(source, "2"),
+      lot1: impactDuLien(source, "1"),
+      lot2: impactDuLien(source, "2"),
       // Le lot 13 du RSEE ne se confond pas avec le photovoltaïque : on repart de Mi PV
       lot13: zone.coefficients?.ic_construction?.mipv > 0 ? zone.coefficients.ic_construction.mipv + R.franchise_lot13 : null,
       ded: source.indicateurs?.ic_ded ?? null,

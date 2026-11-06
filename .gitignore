@@ -1,6 +1,8 @@
 # Les RSEE ne vont jamais dans le dépôt (données nominatives : noms, SIRET, adresses)
+RSEE/
 *.xml
 *.zip
+*.pdf
 tests/rsee/
 
 # Captures d'écran des tests : elles montrent le contenu des RSEE

@@ -13,6 +13,23 @@ const REGLAGES_SEUILS = {
   // Écart relatif toléré entre le calcul affiché et le seuil lu dans le RSEE
   tolerance_calcul: 0.001,
 
+  // Notation RE2020 des coefficients de modulation, d'après les balises du RSEE
+  libelles_coefficients: {
+    migeo: "Mi géo", micombles: "Mi combles", misurf: "Mi surf", misurf_moy: "Mi surf moy", misurf_tot: "Mi surf tot",
+    miinfra: "Mi infra", mivrd: "Mi VRD", mipv: "Mi PV", mided: "Mi DED",
+    ic_construction_maxmoyen: "Ic construction max moyen",
+    mcgeo: "Mc géo", mccombles: "Mc combles", mcsurf_moy: "Mc surf moy", mcsurf_tot: "Mc surf tot", mccat: "Mc cat",
+    ic_energie_maxmoyen: "Ic énergie max moyen",
+    O_Mbgeo: "Mb géo", O_Mbcombles: "Mb combles", O_Mbsurf_moy: "Mb surf moy", O_Mbsurf_tot: "Mb surf tot", O_Mbbruit: "Mb bruit",
+    O_Mcgeo: "Mc géo", O_Mccombles: "Mc combles", O_Mcsurf_moy: "Mc surf moy", O_Mcsurf_tot: "Mc surf tot", O_Mccat: "Mc cat",
+  },
+
+  // Ordre d'affichage des coefficients Ic dans l'onglet Informations
+  ordre_coefficients: {
+    ic_construction: ["migeo", "micombles", "misurf", "misurf_moy", "misurf_tot", "miinfra", "mivrd", "mided", "mipv", "ic_construction_maxmoyen"],
+    ic_energie: ["mcgeo", "mccombles", "mcsurf_moy", "mcsurf_tot", "mccat", "ic_energie_maxmoyen"],
+  },
+
   // Franchise du lot 13 dans l'outil : Mi PV = lot 13 − franchise
   franchise_lot13: 20,
 
