@@ -190,6 +190,12 @@ def main():
             for l in csv.DictReader(f, delimiter=";"):
                 codes_csv.setdefault(l["champ"], {})[l["code"]] = {"libelle": l["libelle"], "statut": l["statut"]}
         verifier(page.evaluate("CODES_RSEE") == codes_csv, "js/codes.js diffère de donnees/codes_RSEE.csv")
+        with open(RACINE / "donnees" / "zones_departements.txt", encoding="utf-8") as f:
+            departements = {l.split("|")[1]: l.split("|")[2] for l in f.read().strip().splitlines()[1:]}
+        verifier(page.evaluate("DEPARTEMENTS") == departements, "js/departements.js diffère de donnees/zones_departements.txt")
+        for iso, attendu_d in (("2022-01-01", "1er janvier 2022"), ("2023-11-09", "9 novembre 2023"), ("2024-08-31", "31 août 2024")):
+            lu_d = page.evaluate("d => Format.date(d)", iso)
+            verifier(lu_d == attendu_d, f"date {iso} : {lu_d}")
 
         print("3. RSEE")
         for chemin in rsee:
@@ -343,6 +349,9 @@ def main():
                 verifier(familles == ["carbone", "carbone", "bioclimatique", "energie", "energie", "confort"], f"{chemin.name} : familles {familles}")
                 fond_carte = page.evaluate("getComputedStyle(document.querySelector('.exigence')).backgroundColor")
                 verifier(fond_carte == "rgb(255, 154, 87)", f"{chemin.name} : fond de la carte carbone {fond_carte}")
+                # Contour : épais pour une exigence à risque, fin pour une marge confortable
+                bords = page.eval_on_selector_all(".exigence", "l => l.map(x => [x.dataset.niveau, getComputedStyle(x).borderTopWidth])")
+                verifier(all((w == "6px") == (n in ("alerte", "forte", "depasse")) for n, w in bords), f"{chemin.name} : contours {bords}")
                 # Heures d'inconfort : une ligne par groupe, valeurs du RSET
                 groupes_b = b["indicateurs"]["groupes_dh"]
                 lignes_h = page.eval_on_selector_all(".tableau-inconfort tbody tr", "l => l.map(r => [...r.querySelectorAll('td')].map(c => c.textContent))")
@@ -389,6 +398,25 @@ def main():
                     const dt = [...document.querySelectorAll('#detail dt')].find((d) => d.textContent === "Nombre d'ascenseurs");
                     return dt ? dt.nextElementSibling.textContent : null; }""")
                 verifier(ascenseurs is not None and lire_nombre(ascenseurs) == b["nb_ascenseurs"], f"{chemin.name} bâtiment {b['index']} : ascenseurs {ascenseurs}")
+                # Zones de logement : traversante ou non, d'après le RSET
+                for z in b["zones"]:
+                    if z["logement"] and z["traversant"] is not None:
+                        verifier("Traversante" in infos, f"{chemin.name} zone {z['index']} : colonne Traversante absente")
+            # Projet : dates au format long, département avec son nom
+            page.locator(".noeud[data-type=projet]").first.click()
+            infos = page.inner_text("#detail")
+            verifier(not re.search(r"\d{4}-\d{2}-\d{2}|\d{2}/\d{2}/\d{4}", infos), f"{chemin.name} : date au format court")
+            code_dep = modele["informations"]["localisation"]["departement"]
+            if code_dep:
+                cle_dep = code_dep.zfill(2) if code_dep.isdigit() else code_dep
+                verifier(f"{cle_dep} – {departements[cle_dep]}" in infos, f"{chemin.name} : département {code_dep}")
+            # Composants : identifiants INIES en lien vers base-inies.fr, nouvel onglet
+            page.click("[data-onglet=composants]")
+            liens_inies = page.eval_on_selector_all("a[href*='base-inies.fr']", "l => l.map(a => [a.href, a.target, a.rel])")
+            verifier(len(liens_inies) > 0, f"{chemin.name} : aucun lien INIES")
+            verifier(all(re.fullmatch(r"https://www\.base-inies\.fr/consultation/infos-produit/\d+", h) and t == "_blank" and "noopener" in r
+                         for h, t, r in liens_inies), f"{chemin.name} : liens INIES mal formés")
+            page.click("[data-onglet=informations]")
             for type_noeud in ("projet", "batiment", "zone", "parcelle"):
                 noeuds = page.locator(f".noeud[data-type={type_noeud}]")
                 if noeuds.count():

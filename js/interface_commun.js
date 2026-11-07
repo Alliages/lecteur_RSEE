@@ -64,7 +64,11 @@ const Commun = (() => {
   };
 
   /* ---------- Mise en forme ---------- */
-  const { nombre: formatNombre, signe: formatSigne, coefficient: formatCoefficient } = Format;
+  const { nombre: formatNombre, signe: formatSigne, coefficient: formatCoefficient, date: formatDate } = Format;
+
+  // Zone de logement traversante ou non (null hors logement ou sans information)
+  const texteTraversant = (zone) =>
+    zone.logement && zone.traversant !== null && zone.traversant !== undefined ? (zone.traversant ? "Traversante" : "Non traversante") : null;
 
   const formatTaille = (octets) =>
     octets < 1024 * 1024 ? formatNombre(octets / 1024) + " ko" : formatNombre(octets / 1024 / 1024, 1) + " Mo";
@@ -136,7 +140,7 @@ const Commun = (() => {
           ],
           tuiles: [
             ["logiciel", "Logiciel", p.logiciels.join(" / ") || null],
-            ["calendrier", "Date d'étude", p.date_etude],
+            ["calendrier", "Date d'étude", formatDate(p.date_etude)],
             ["etiquette", "Version RSEnv", p.version_rsenv],
             ["etiquette", "Version RSET", p.version_rset],
             ["composants", "Composants (somme des zones)", formatNombre(nbComp)],
@@ -163,12 +167,13 @@ const Commun = (() => {
         return {
           titre: noeud.nom,
           sous_titre: "Zone " + noeud.index + (parent ? " · " + parent.nom : ""),
-          badges: [avecUnite(noeud.sref, "m²", S), pluriel(noeud.nb_composants, "composant")],
+          badges: [avecUnite(noeud.sref, "m²", S), texteTraversant(noeud), pluriel(noeud.nb_composants, "composant")],
           tuiles: [
             ["surface", "Sref", avecUnite(noeud.sref, "m²", S)],
             noeud.logement
               ? ["logement", "Logements", avecUnite(noeud.nb_logement, "")]
               : ["personnes", "Occupants", avecUnite(noeud.n_occ, "")],
+            ...(texteTraversant(noeud) ? [["zone", "Zone traversante", noeud.traversant ? "Oui" : "Non"]] : []),
             ["etiquette", "Usage (code RSEE)", noeud.usage],
             ["composants", "Composants", formatNombre(noeud.nb_composants)],
             ["services", "Données de service", formatNombre(noeud.nb_services)],
@@ -255,6 +260,6 @@ const Commun = (() => {
   }
 
   return {
-    ICONES, FONDS_TUILES, ESP, UNITE_IC, LIBELLES_STATUT, SYMBOLES_STATUT, el, formatNombre, formatSigne, formatCoefficient, formatTaille, pluriel, avecUnite, creer, creerTableau, pastilleIcone, pastilles, decrire, niveauxMarge, logoNiveau, legendeMarges, legendeFamilles, section, valeurCodee,
+    ICONES, FONDS_TUILES, ESP, UNITE_IC, LIBELLES_STATUT, SYMBOLES_STATUT, el, formatNombre, formatSigne, formatCoefficient, formatDate, formatTaille, pluriel, texteTraversant, avecUnite, creer, creerTableau, pastilleIcone, pastilles, decrire, niveauxMarge, logoNiveau, legendeMarges, legendeFamilles, section, valeurCodee,
   };
 })();

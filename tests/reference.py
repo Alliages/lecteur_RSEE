@@ -173,11 +173,12 @@ def reference(chemin_fichier, nomenclature=None):
     entree = rsenv.find("entree_projet")
 
     # Noms RSET des bâtiments et des zones
-    noms_bat, noms_zone = {}, {}
+    noms_bat, noms_zone, traversants = {}, {}, {}
     for b in racine.findall("RSET/Entree_Projet/Batiment_Collection/Batiment"):
         noms_bat[texte(b, "Index")] = texte(b, "Name")
         for z in b.findall("Zone_Collection/Zone"):
             noms_zone[texte(z, "Index")] = texte(z, "Name")
+            traversants[texte(z, "Index")] = nombre(z, "Is_Traversant")
 
     logiciels = []
     for l in generales.findall("logiciel"):
@@ -211,6 +212,7 @@ def reference(chemin_fichier, nomenclature=None):
                 "n_occ": nombre(z, "n_occ"),
                 "nb_logement": nombre(z, "nb_logement"),
                 "logement": texte(z, "usage") in ("1", "2"),
+                "traversant": None if traversants.get(idx) is None else traversants[idx] == 1,
                 "nb_composants": compter(contrib, "donnees_composant"),
                 "nb_services": compter(contrib, "donnees_service"),
             })

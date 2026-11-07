@@ -120,14 +120,16 @@ const LectureRSEE = (() => {
 
   /* ---------- Construction du modèle ---------- */
 
-  // Noms des bâtiments et des zones tirés du RSET, indexés par index
+  // Noms des bâtiments et des zones tirés du RSET, indexés par index,
+  // et caractère traversant des zones (Is_Traversant : 1 ou 0)
   function nomsRSET(racine) {
-    const noms = { batiments: {}, zones: {} };
+    const noms = { batiments: {}, zones: {}, traversants: {} };
     const collection = suivre(racine, REGLAGES.blocs.energie + "/Entree_Projet/Batiment_Collection");
     for (const b of enfants(collection, "Batiment")) {
       noms.batiments[texte(b, "Index")] = texte(b, "Name");
       for (const z of enfants(enfant(b, "Zone_Collection"), "Zone")) {
         noms.zones[texte(z, "Index")] = texte(z, "Name");
+        noms.traversants[texte(z, "Index")] = nombre(z, "Is_Traversant");
       }
     }
     return noms;
@@ -468,6 +470,8 @@ const LectureRSEE = (() => {
       sref: nombre(z, "sref"),
       usage: texte(z, "usage"), // code (libellé : js/codes.js)
       logement: REGLAGES.usages_logement.includes(texte(z, "usage")),
+      // Zone traversante (RSET) : true, false, ou null si l'information manque
+      traversant: noms.traversants[index] === undefined || noms.traversants[index] === null ? null : noms.traversants[index] === 1,
       n_occ: nombre(z, "n_occ"),
       nb_logement: nombre(z, "nb_logement"),
       nb_composants: compter(enfant(z, "contributeur"), "donnees_composant"),

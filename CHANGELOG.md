@@ -1,5 +1,20 @@
 # CHANGELOG — lecteur_RSEE
 
+## 0.9.6 — 2026-11-07
+
+- Dates au format long (« 9 novembre 2023 », « 1er janvier 2022 »), dans les Informations et
+  la Synthèse.
+- Localisation : département avec son nom (`donnees/zones_departements.txt`, repris du dépôt
+  zones-climatiques-re2020), altitude en classe (le champ est un code, il était affiché en
+  mètres), libellés de la zone sismique, de la nature géotechnique du sol et de la pollution du
+  sol. Stade d'avancement : codes 1 et 2 libellés. Libellés marqués « à valider ».
+- Zones de logement : traversante ou non (RSET), sur la fiche, la tuile, l'arborescence et le
+  tableau des zones.
+- Exigences à risque : contour épais de la couleur du niveau, cerné de noir ; marge
+  confortable : contour fin.
+- Composants : identifiants INIES en lien vers base-inies.fr (fiche, et fiche mère des fiches
+  configurées).
+
 ## 0.9.4 — 2026-11-07
 
 - Logements : nombre total par bâtiment (somme des zones d'usage 1 ou 2) dans la Synthèse et

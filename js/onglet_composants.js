@@ -66,13 +66,34 @@ const OngletComposants = (() => {
     return td;
   }
 
-  // Cellule « Fiche » : nom, identifiants, commentaire, paramètres du configurateur
+  // Identifiant d'une fiche de la base INIES : numérique (les configurateurs ont les leurs)
+  const estIdInies = (id) => /^\d+$/.test(id || "");
+
+  // Lien vers la fiche sur base-inies.fr, ouvert dans un nouvel onglet
+  function lienInies(id, texte) {
+    const a = creer("a", null, texte);
+    a.href = REGLAGES.url_inies + id;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    return a;
+  }
+
+  // Cellule « Fiche » : nom, identifiants, commentaire, paramètres du configurateur.
+  // Fiche de la base INIES (id_base 0) et fiche mère INIES d'une fiche configurée : liens.
   function celluleFiche(l) {
     const td = creer("td", "fiche");
     td.append(creer("span", "nom-fiche", l.nom || "(sans nom)"));
-    const ids = [l.id_fiche && "fiche " + l.id_fiche, l.id_produit && l.id_produit !== l.id_fiche ? l.id_produit : null]
-      .filter(Boolean).join(" · ");
-    if (ids) td.append(creer("span", "detail", ids));
+    const ids = [];
+    if (l.id_fiche) ids.push(l.id_base === "0" && estIdInies(l.id_fiche) ? lienInies(l.id_fiche, "fiche " + l.id_fiche) : "fiche " + l.id_fiche);
+    if (l.id_produit && l.id_produit !== l.id_fiche) ids.push(l.id_produit);
+    if (l.id_fiche_mere && l.id_fiche_mere !== l.id_fiche && estIdInies(l.id_fiche_mere)) {
+      ids.push(lienInies(l.id_fiche_mere, "fiche mère " + l.id_fiche_mere));
+    }
+    if (ids.length) {
+      const detail = creer("span", "detail");
+      ids.forEach((id, i) => detail.append(...(i ? [" · ", id] : [id])));
+      td.append(detail);
+    }
     if (l.commentaire) {
       // Les logiciels séparent les éléments du commentaire par « | »
       const texte = l.commentaire.split("|").map((x) => x.trim()).filter(Boolean).join(" · ");
@@ -326,6 +347,8 @@ const OngletComposants = (() => {
         "Les logiciels répartissent chaque fiche entre les zones au prorata de leur Sref : " +
         "les lignes identiques des zones sont regroupées et leurs quantités additionnées."));
     }
+    tableau.append(creer("p", "note",
+      "Les identifiants soulignés ouvrent la fiche sur base-inies.fr, un site externe, dans un nouvel onglet."));
     blocs.push(tableau);
     el.detail.replaceChildren(...blocs);
   }

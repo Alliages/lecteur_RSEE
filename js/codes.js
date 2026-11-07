@@ -38,6 +38,29 @@ const CODES_RSEE = {
   type_travaux: {
     "1": { libelle: "Construction neuve", statut: "déduit" },
   },
+  avancement: {
+    "1": { libelle: "Stade Permis de construire", statut: "déduit" },
+    "2": { libelle: "Stade Provisoire dossier DCE", statut: "déduit" },
+  },
+  zone_sismique: {
+    "1": { libelle: "Très faible", statut: "déduit" },
+    "2": { libelle: "Faible", statut: "déduit" },
+    "3": { libelle: "Modérée", statut: "déduit" },
+    "4": { libelle: "Moyenne", statut: "déduit" },
+    "5": { libelle: "Forte", statut: "déduit" },
+  },
+  sol_pollution: {
+    "0": { libelle: "Non", statut: "déduit" },
+    "1": { libelle: "Oui", statut: "déduit" },
+  },
+  geotech: {
+    "1": { libelle: "Limons, argiles limoneuses", statut: "déduit" },
+  },
+  altitude: {
+    "0": { libelle: "Entre 0 et 400 m inclus", statut: "déduit" },
+    "1": { libelle: "Entre 400 et 800 m", statut: "déduit" },
+    "2": { libelle: "Plus de 800 m", statut: "déduit" },
+  },
   phase: {
     "1": { libelle: "Programmation", statut: "documenté" },
     "2": { libelle: "Conception", statut: "documenté" },

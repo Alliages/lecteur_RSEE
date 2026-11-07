@@ -42,13 +42,17 @@ Seule liste de suivi du projet. Cocher au fil des versions et reporter dans CHAN
 - [x] Projet : opération, n° PC, dates, avancement
 - [x] Localisation : adresse, cadastre, zone climatique, altitude, zone sismique, sol
 - [x] Acteurs : MOA, MOE, BET énergie et environnement, bureau de contrôle
-- [x] Bâtiment / zone : usage, Sref, logements (occupants hors logement), type de construction, niveaux, ascenseurs, emprise, parkings
+- [x] Bâtiment / zone : usage, Sref, logements (occupants hors logement), type de construction, niveaux, ascenseurs, emprise, parkings, zone traversante
+- [x] Dates au format long, département avec son nom, libellés des codes de localisation (stade, sismicité, géotechnique, pollution, altitude)
+- [x] Liens vers les fiches de la base INIES
+- [ ] Libellés à confirmer : stade d'avancement 3, nature géotechnique 2 et 12, altitude 2
 - [x] Coefficients de modulation et détail du calcul des seuils
 
 ### Indicateurs
 - [x] Indicateurs réglementaires avec seuil et écart : Ic construction, Ic énergie, Bbio, Cep, Cep,nr, DH
 - [x] Couleur par famille d'indicateurs (bioclimatique, énergie, carbone, confort d'été), hors graphiques du HUB
 - [x] Heures d'inconfort par groupe (t° d'inconfort, +1°, +2°)
+- [x] Contour marqué des exigences à risque (marge < 10 %, < 5 %, dépassement)
 - [x] Indicateurs pédagogiques : Ic composants, énergie, eau, chantier, bâtiment ; StockC ; UDD ; Ic ded
 - [x] Synthèse visuelle conforme / non conforme, écarts et risques (marge < 10 %, < 5 %)
 - [x] Calcul des seuils en tête de page et lien vers l'outil Seuils RE2020

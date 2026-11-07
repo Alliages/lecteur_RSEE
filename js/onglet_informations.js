@@ -7,7 +7,7 @@
 
 const OngletInformations = (() => {
   const {
-    ESP, UNITE_IC, el, formatNombre, formatCoefficient, creer, creerTableau, section, valeurCodee,
+    ESP, UNITE_IC, el, formatNombre, formatCoefficient, formatDate, creer, creerTableau, section, valeurCodee,
   } = Commun;
 
   // Liste « libellé : valeur » ; une valeur peut être un texte ou un élément.
@@ -33,11 +33,16 @@ const OngletInformations = (() => {
     return carte;
   }
 
-  const date = (t) => {
-    // Dates ISO « AAAA-MM-JJ » affichées « JJ/MM/AAAA » ; autres formats laissés tels quels
-    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(t || "");
-    return m ? `${m[3]}/${m[2]}/${m[1]}` : t || null;
-  };
+  // Dates au format long (« 9 novembre 2023 ») ; autres formats laissés tels quels
+  const date = formatDate;
+
+  // Département : code sur deux caractères et nom (donnees/zones_departements.txt) ;
+  // code seul s'il n'est pas dans la table (outre-mer par exemple)
+  function departement(code) {
+    if (!code) return null;
+    const cle = /^\d$/.test(code) ? "0" + code : code;
+    return DEPARTEMENTS[cle] ? `${cle} – ${DEPARTEMENTS[cle]}` : code;
+  }
   const nombreOuNull = (n, unite, dec = 0) => (n === null || n === undefined ? null : `${formatNombre(n, dec)}${unite ? ESP + unite : ""}`);
 
   const formatCoef = (n) => (n === null || n === undefined ? null : formatCoefficient(n));
@@ -75,7 +80,7 @@ const OngletInformations = (() => {
     const avecLogements = batiment.zones.some((z) => z.logement);
     const avecOccupants = batiment.zones.some((z) => !z.logement);
     const { enveloppe, tbody } = creerTableau("tableau", [
-      "Zone", "Usage", "Sref", "SHAB", ...(avecLogements ? ["Logements"] : []), ...(avecOccupants ? ["Occupants"] : []),
+      "Zone", "Usage", "Sref", "SHAB", ...(avecLogements ? ["Logements", "Traversante"] : []), ...(avecOccupants ? ["Occupants"] : []),
     ]);
     for (const z of batiment.zones) {
       const tr = creer("tr");
@@ -88,7 +93,12 @@ const OngletInformations = (() => {
         creer("td", "nombre", nombreOuNull(z.sref, "m²", 1) || "–"),
         creer("td", "nombre", nombreOuNull(z.informations.shab, "m²", 1) || "–")
       );
-      if (avecLogements) tr.append(creer("td", "nombre", (z.logement && nombreOuNull(z.nb_logement, "")) || "–"));
+      if (avecLogements) {
+        tr.append(
+          creer("td", "nombre", (z.logement && nombreOuNull(z.nb_logement, "")) || "–"),
+          creer("td", null, Commun.texteTraversant(z) ? (z.traversant ? "Oui" : "Non") : "–")
+        );
+      }
       if (avecOccupants) tr.append(creer("td", "nombre", (!z.logement && nombreOuNull(z.n_occ, "")) || "–"));
       tbody.append(tr);
     }
@@ -110,7 +120,7 @@ const OngletInformations = (() => {
             ["Dépôt du PC", date(op.date_depot_pc)],
             ["Obtention du PC", date(op.date_obtention_pc)],
             ["Livraison prévue", date(op.date_livraison)],
-            ["Avancement", valeurCodee("avancement", op.avancement)],
+            ["Stade d'avancement", valeurCodee("avancement", op.avancement)],
             ["Phase (RSEnv)", valeurCodee("phase", Etat.modele.projet.phase)],
             ["Date d'étude (RSEnv)", date(Etat.modele.projet.date_etude)],
           ]),
@@ -118,10 +128,10 @@ const OngletInformations = (() => {
             ["Adresse", loc.adresse],
             ["Référence cadastrale", loc.cadastre],
             ["Zone climatique", loc.zone_climatique],
-            ["Département (RSET)", loc.departement],
-            ["Zone sismique", loc.zone_sismique],
-            ["Altitude déclarée", nombreOuNull(loc.altitude, "m")],
-            ["Étude géotechnique", valeurCodee("geotech", loc.geotech)],
+            ["Département (RSET)", departement(loc.departement)],
+            ["Zone sismique", valeurCodee("zone_sismique", loc.zone_sismique)],
+            ["Altitude", valeurCodee("altitude", loc.altitude)],
+            ["Nature géotechnique du sol", valeurCodee("geotech", loc.geotech)],
             ["Pollution du sol", valeurCodee("sol_pollution", loc.sol_pollution)],
           ])
         );
@@ -200,6 +210,7 @@ const OngletInformations = (() => {
             noeud.logement
               ? ["Nombre de logements", nombreOuNull(noeud.nb_logement, "")]
               : ["Occupants", nombreOuNull(noeud.n_occ, "")],
+            ...(Commun.texteTraversant(noeud) ? [["Zone traversante", noeud.traversant ? "Oui" : "Non"]] : []),
           ]),
           carteCoefficients(noeud)
         );

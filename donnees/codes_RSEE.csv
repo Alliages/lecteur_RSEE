@@ -18,6 +18,19 @@ usage;1;Maison individuelle ou accolée;déduit;logements de fonction (4 occupan
 usage;2;Logement collectif;déduit;immeubles de logements
 usage;3;Bureaux;déduit;immeubles de bureaux
 type_travaux;1;Construction neuve;déduit;libellé de la fiche PDF d'un RSEE (Type de construction)
+avancement;1;Stade Permis de construire;déduit;indiqué par l'utilisateur
+avancement;2;Stade Provisoire dossier DCE;déduit;libellé de la fiche PDF d'un RSEE (Stade d'avancement), version d'étude différente du XML
+zone_sismique;1;Très faible;déduit;numéro de la zone de sismicité réglementaire
+zone_sismique;2;Faible;déduit;numéro de la zone de sismicité réglementaire
+zone_sismique;3;Modérée;déduit;numéro de la zone de sismicité réglementaire
+zone_sismique;4;Moyenne;déduit;numéro de la zone de sismicité réglementaire
+zone_sismique;5;Forte;déduit;numéro de la zone de sismicité réglementaire
+sol_pollution;0;Non;déduit;indiqué par l'utilisateur
+sol_pollution;1;Oui;déduit;indiqué par l'utilisateur
+geotech;1;Limons, argiles limoneuses;déduit;indiqué par l'utilisateur (Nature géotechnique du sol)
+altitude;0;Entre 0 et 400 m inclus;déduit;fiche PDF d'un RSEE ; 100 m dans le RSET
+altitude;1;Entre 400 et 800 m;déduit;500 m dans le RSET
+altitude;2;Plus de 800 m;déduit;classe suivante, absente des RSEE de test
 phase;1;Programmation;documenté;projet/RSEnv/@phase
 phase;2;Conception;documenté;projet/RSEnv/@phase
 phase;3;Réalisation;documenté;projet/RSEnv/@phase

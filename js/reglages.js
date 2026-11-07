@@ -9,7 +9,7 @@
 
 const REGLAGES = {
   // Version affichée (doit rester identique au fichier VERSION)
-  version: "0.9.4",
+  version: "0.9.6",
 
   // Extensions acceptées à l'import
   extensions_acceptees: [".xml"],
@@ -35,6 +35,9 @@ const REGLAGES = {
   // Codes d'usage d'une zone de logement (individuel ou collectif) : seules ces zones ont un
   // nombre de logements significatif (le champ vaut 0, 1 ou plus sur des bureaux)
   usages_logement: ["1", "2"],
+
+  // Fiche d'un produit sur la base INIES (identifiant ajouté à la fin), ouverte dans un nouvel onglet
+  url_inies: "https://www.base-inies.fr/consultation/infos-produit/",
 
   // Unité des Ic dans les onglets (celle des graphiques est dans js/reglages_graphiques.js)
   unite_ic: "kg éq. CO₂/m²",
