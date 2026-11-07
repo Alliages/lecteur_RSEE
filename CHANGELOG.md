@@ -1,5 +1,19 @@
 # CHANGELOG — lecteur_RSEE
 
+## 0.9.4 — 2026-11-07
+
+- Logements : nombre total par bâtiment (somme des zones d'usage 1 ou 2) dans la Synthèse et
+  les Informations. Il remplace les occupants pour le logement ; les occupants restent pour les
+  autres usages, et le champ logements n'est plus affiché sur une zone tertiaire, où il n'a pas de sens.
+- Informations du bâtiment : type de construction (`type_travaux`, code 1 « Construction
+  neuve »), nombres de niveaux en sous-sol et en surface, nombre d'ascenseurs (RSET).
+- Indicateurs : section « Heures d'inconfort », par groupe (t° opérative au-dessus de la
+  t° d'inconfort, +1°, +2°).
+- Couleur par famille d'indicateurs (bioclimatique, énergie, carbone, confort d'été) : cartes
+  d'exigence, écarts, risques, calcul des seuils, Composition de l'Ic, avec légende. Les
+  niveaux de risque gardent leurs couleurs ; les graphiques du HUB ne changent pas.
+- Tests : logements, occupants, ascenseurs, heures d'inconfort et familles.
+
 ## 0.9.3 — 2026-11-06
 
 Corrections de l'audit du dépôt.

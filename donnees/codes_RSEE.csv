@@ -17,6 +17,7 @@ unite_uf;13;unité;déduit;vannes, clapets, regards, râteliers
 usage;1;Maison individuelle ou accolée;déduit;logements de fonction (4 occupants)
 usage;2;Logement collectif;déduit;immeubles de logements
 usage;3;Bureaux;déduit;immeubles de bureaux
+type_travaux;1;Construction neuve;déduit;libellé de la fiche PDF d'un RSEE (Type de construction)
 phase;1;Programmation;documenté;projet/RSEnv/@phase
 phase;2;Conception;documenté;projet/RSEnv/@phase
 phase;3;Réalisation;documenté;projet/RSEnv/@phase

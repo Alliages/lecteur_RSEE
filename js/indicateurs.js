@@ -15,26 +15,29 @@
 "use strict";
 
 const INDICATEURS = {
+  // Familles d'indicateurs : libellés de la légende (couleurs : css/style.css)
+  familles: { bioclimatique: "Bioclimatique", energie: "Énergie", carbone: "Carbone", confort: "Confort d'été" },
+
   // Exigences réglementaires (dans l'ordre d'affichage)
   exigences: [
     {
       cle: "ic_construction", libelle: "Ic construction", source: "RSEnv",
       valeur: "ic_construction", seuil: "ic_construction_max",
-      unite: REGLAGES.unite_ic, decimales: 0,
+      famille: "carbone", unite: REGLAGES.unite_ic, decimales: 0,
       jalons: { 2025: "ic_construction_max_2025", 2028: "ic_construction_max_2028", 2031: "ic_construction_max_2031" },
       par_occupant: "ic_construction_occ",
     },
     {
       cle: "ic_energie", libelle: "Ic énergie", source: "RSEnv",
       valeur: "ic_energie", seuil: "ic_energie_max",
-      unite: REGLAGES.unite_ic, decimales: 1,
+      famille: "carbone", unite: REGLAGES.unite_ic, decimales: 1,
       jalons: { 2025: "ic_energie_max_2025", 2028: "ic_energie_max_2028" },
       par_occupant: "ic_energie_occ",
     },
-    { cle: "bbio", libelle: "Bbio", source: "RSET", valeur: "bbio", seuil: "bbio_max", unite: "points", decimales: 1 },
-    { cle: "cep", libelle: "Cep", source: "RSET", valeur: "cep", seuil: "cep_max", unite: "kWhep/m²/an", decimales: 1 },
-    { cle: "cep_nr", libelle: "Cep,nr", source: "RSET", valeur: "cep_nr", seuil: "cep_nr_max", unite: "kWhep/m²/an", decimales: 1 },
-    { cle: "dh", libelle: "DH (degrés-heures)", libelle_court: "DH", source: "RSET", groupes: true, unite: "°C.h", decimales: 0 },
+    { cle: "bbio", libelle: "Bbio", source: "RSET", famille: "bioclimatique", valeur: "bbio", seuil: "bbio_max", unite: "points", decimales: 1 },
+    { cle: "cep", libelle: "Cep", source: "RSET", famille: "energie", valeur: "cep", seuil: "cep_max", unite: "kWhep/m²/an", decimales: 1 },
+    { cle: "cep_nr", libelle: "Cep,nr", source: "RSET", famille: "energie", valeur: "cep_nr", seuil: "cep_nr_max", unite: "kWhep/m²/an", decimales: 1 },
+    { cle: "dh", libelle: "DH (degrés-heures)", libelle_court: "DH", source: "RSET", famille: "confort", groupes: true, unite: "°C.h", decimales: 0 },
   ],
 
   // Indicateurs pédagogiques (sans seuil). Pour une zone, « zone » et « libelle_zone »
@@ -84,6 +87,9 @@ const INDICATEURS = {
 /* ---------- Évaluation (comparaisons seulement, sans recalcul) ---------- */
 
 const EvaluationIndicateurs = (() => {
+  // Famille d'une exigence d'après sa clé (undefined si la clé n'est pas une exigence)
+  const familleDe = (cle) => INDICATEURS.exigences.find((e) => e.cle === cle)?.famille;
+
   // "conforme" si valeur ≤ seuil, "depasse" sinon, "absent" si l'un manque
   function statut(valeur, seuil) {
     if (valeur === null || valeur === undefined || seuil === null || seuil === undefined) return "absent";
@@ -136,5 +142,5 @@ const EvaluationIndicateurs = (() => {
     return INDICATEURS.exigences.map((def) => evaluer(def, ind || {}));
   }
 
-  return { statut, ecart, evaluer, evaluerTout };
+  return { familleDe, statut, ecart, evaluer, evaluerTout };
 })();

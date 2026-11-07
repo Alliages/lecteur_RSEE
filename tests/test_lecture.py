@@ -338,6 +338,18 @@ def main():
             for i, b in enumerate(modele["batiments"]):
                 page.locator(".noeud[data-type=batiment]").nth(i).click()
                 verifier(page.locator(".exigence").count() == 6, f"{chemin.name} bâtiment {b['index']} : 6 exigences attendues")
+                # Une famille de couleur par exigence ; carte de la famille carbone en orange
+                familles = page.eval_on_selector_all(".exigence", "l => l.map(x => x.dataset.famille)")
+                verifier(familles == ["carbone", "carbone", "bioclimatique", "energie", "energie", "confort"], f"{chemin.name} : familles {familles}")
+                fond_carte = page.evaluate("getComputedStyle(document.querySelector('.exigence')).backgroundColor")
+                verifier(fond_carte == "rgb(255, 154, 87)", f"{chemin.name} : fond de la carte carbone {fond_carte}")
+                # Heures d'inconfort : une ligne par groupe, valeurs du RSET
+                groupes_b = b["indicateurs"]["groupes_dh"]
+                lignes_h = page.eval_on_selector_all(".tableau-inconfort tbody tr", "l => l.map(r => [...r.querySelectorAll('td')].map(c => c.textContent))")
+                verifier(len(lignes_h) == len(groupes_b), f"{chemin.name} bâtiment {b['index']} : lignes d'heures d'inconfort")
+                for g, cellules in zip(groupes_b, lignes_h):
+                    for cle, texte_h in zip(("nb_h_inconf", "nb_h_inconf_1", "nb_h_inconf_2"), cellules[1:]):
+                        verifier(lire_nombre(texte_h) == g[cle], f"{chemin.name} : {cle} du groupe {g['index']} = {texte_h}")
                 # Composition : les sommes du schéma tombent juste
                 ind = b["indicateurs"]
                 verifier(page.locator(".bloc-ic").count() == 4, f"{chemin.name} bâtiment {b['index']} : blocs de la composition")
@@ -364,6 +376,19 @@ def main():
 
             # Onglet Informations : une vue sans erreur pour chaque type de nœud
             page.click("[data-onglet=informations]")
+            # Bâtiment : logements pour le logement, occupants pour le reste, ascenseurs du RSET
+            for i, b in enumerate(modele["batiments"]):
+                page.locator(".noeud[data-type=batiment]").nth(i).click()
+                infos = page.inner_text("#detail")
+                tout_logement = all(z["logement"] for z in b["zones"])
+                verifier(("Nombre de logements" in infos) == (b["nb_logement"] is not None), f"{chemin.name} bâtiment {b['index']} : ligne des logements")
+                verifier(("Occupants" in infos) != tout_logement, f"{chemin.name} bâtiment {b['index']} : ligne des occupants")
+                for libelle in ("Type de construction", "Construction neuve", "Nombre de niveaux en sous-sol", "Nombre de niveaux en surface"):
+                    verifier(libelle in infos, f"{chemin.name} bâtiment {b['index']} : {libelle} absent")
+                ascenseurs = page.evaluate("""() => {
+                    const dt = [...document.querySelectorAll('#detail dt')].find((d) => d.textContent === "Nombre d'ascenseurs");
+                    return dt ? dt.nextElementSibling.textContent : null; }""")
+                verifier(ascenseurs is not None and lire_nombre(ascenseurs) == b["nb_ascenseurs"], f"{chemin.name} bâtiment {b['index']} : ascenseurs {ascenseurs}")
             for type_noeud in ("projet", "batiment", "zone", "parcelle"):
                 noeuds = page.locator(f".noeud[data-type={type_noeud}]")
                 if noeuds.count():

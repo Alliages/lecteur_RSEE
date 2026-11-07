@@ -82,13 +82,16 @@ const Commun = (() => {
     return e;
   }
 
-  // Tableau dans son cadre défilant. colonnes : titre, ou [titre, classe de l'en-tête]
+  // Tableau dans son cadre défilant.
+  // colonnes : titre, ou [titre, classe de l'en-tête, famille d'indicateur]
   function creerTableau(classe, colonnes) {
     const table = creer("table", classe);
     const tete = creer("tr");
     for (const colonne of colonnes) {
-      const [titre, classeTitre] = [].concat(colonne);
-      tete.append(creer("th", classeTitre, titre));
+      const [titre, classeTitre, famille] = [].concat(colonne);
+      const th = creer("th", classeTitre, titre);
+      if (famille) th.dataset.famille = famille;
+      tete.append(th);
     }
     const thead = creer("thead");
     thead.append(tete);
@@ -148,6 +151,7 @@ const Commun = (() => {
           badges: [pluriel(noeud.zones.length, "zone"), pluriel(noeud.nb_composants, "composant")],
           tuiles: [
             ["surface", "Sref", avecUnite(noeud.sref, "m²", S)],
+            ...(noeud.nb_logement !== null ? [["logement", "Logements", avecUnite(noeud.nb_logement, "")]] : []),
             ["surface", "Emprise au sol", avecUnite(noeud.emprise_au_sol, "m²", S)],
             ["horloge", "Période de référence", avecUnite(noeud.periode_reference, "ans")],
             ["calendrier", "Durée du chantier", avecUnite(noeud.duree_chantier, "mois")],
@@ -162,8 +166,9 @@ const Commun = (() => {
           badges: [avecUnite(noeud.sref, "m²", S), pluriel(noeud.nb_composants, "composant")],
           tuiles: [
             ["surface", "Sref", avecUnite(noeud.sref, "m²", S)],
-            ["personnes", "Occupants", avecUnite(noeud.n_occ, "")],
-            ["logement", "Logements", avecUnite(noeud.nb_logement, "")],
+            noeud.logement
+              ? ["logement", "Logements", avecUnite(noeud.nb_logement, "")]
+              : ["personnes", "Occupants", avecUnite(noeud.n_occ, "")],
             ["etiquette", "Usage (code RSEE)", noeud.usage],
             ["composants", "Composants", formatNombre(noeud.nb_composants)],
             ["services", "Données de service", formatNombre(noeud.nb_services)],
@@ -214,6 +219,18 @@ const Commun = (() => {
     return legende;
   }
 
+  // Légende des couleurs de familles d'indicateurs
+  function legendeFamilles() {
+    const legende = creer("div", "legende-familles");
+    for (const [famille, libelle] of Object.entries(INDICATEURS.familles)) {
+      const item = creer("span", "item-famille");
+      item.dataset.famille = famille;
+      item.append(creer("span", "pastille-famille"), creer("span", null, libelle));
+      legende.append(item);
+    }
+    return legende;
+  }
+
   function section(titre, ...contenu) {
     const s = creer("section", "bloc-indicateurs");
     s.append(creer("h3", "titre-bloc", titre), ...contenu);
@@ -238,6 +255,6 @@ const Commun = (() => {
   }
 
   return {
-    ICONES, FONDS_TUILES, ESP, UNITE_IC, LIBELLES_STATUT, SYMBOLES_STATUT, el, formatNombre, formatSigne, formatCoefficient, formatTaille, pluriel, avecUnite, creer, creerTableau, pastilleIcone, pastilles, decrire, niveauxMarge, logoNiveau, legendeMarges, section, valeurCodee,
+    ICONES, FONDS_TUILES, ESP, UNITE_IC, LIBELLES_STATUT, SYMBOLES_STATUT, el, formatNombre, formatSigne, formatCoefficient, formatTaille, pluriel, avecUnite, creer, creerTableau, pastilleIcone, pastilles, decrire, niveauxMarge, logoNiveau, legendeMarges, legendeFamilles, section, valeurCodee,
   };
 })();

@@ -35,6 +35,9 @@ const CODES_RSEE = {
     "2": { libelle: "Logement collectif", statut: "déduit" },
     "3": { libelle: "Bureaux", statut: "déduit" },
   },
+  type_travaux: {
+    "1": { libelle: "Construction neuve", statut: "déduit" },
+  },
   phase: {
     "1": { libelle: "Programmation", statut: "documenté" },
     "2": { libelle: "Conception", statut: "documenté" },

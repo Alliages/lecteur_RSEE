@@ -15,6 +15,20 @@
   --survol-hub: #ffc000;      /* onglet Graphiques du HUB, survolé ou actif (jaune réservé à cet onglet) */
   --orange-risque: #ff8c1a;   /* marge sous le seuil < 5 % */
 
+  /* --- Familles d'indicateurs : bande ou liseré, fond clair de carte, texte sur la bande --- */
+  --bioclimatique: #86a5d9;   /* Wisteria Blue */
+  --bioclimatique-fond: #b9cdf6;
+  --bioclimatique-texte: #1f2238;
+  --energie: #8db38b;         /* Muted Teal */
+  --energie-fond: #c9eec8;
+  --energie-texte: #1f2238;
+  --carbone: #c75000;         /* Bronze Spice */
+  --carbone-fond: #ff9a57;
+  --carbone-texte: #ffffff;
+  --confort: #ddd486;         /* Jaune été */
+  --confort-fond: #fbf39c;
+  --confort-texte: #1f2238;
+
   /* --- Neutres --- */
   --encre: #15131c;           /* contours et texte principal */
   --texte-doux: #5d5a69;      /* texte secondaire */
@@ -38,6 +52,12 @@
   --police-titre: "Cooper Black", "Rockwell Extra Bold", "Rockwell", Georgia, serif;
   --police-texte: "Nunito", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
 }
+
+/* Couleurs de la famille d'un élément (voir INDICATEURS.familles) */
+[data-famille="bioclimatique"] { --famille: var(--bioclimatique); --famille-fond: var(--bioclimatique-fond); --famille-texte: var(--bioclimatique-texte); }
+[data-famille="energie"] { --famille: var(--energie); --famille-fond: var(--energie-fond); --famille-texte: var(--energie-texte); }
+[data-famille="carbone"] { --famille: var(--carbone); --famille-fond: var(--carbone-fond); --famille-texte: var(--carbone-texte); }
+[data-famille="confort"] { --famille: var(--confort); --famille-fond: var(--confort-fond); --famille-texte: var(--confort-texte); }
 
 /* ---------- Base ---------- */
 * { box-sizing: border-box; }
@@ -410,22 +430,36 @@ button { font: inherit; color: inherit; }
 /* Cartes d'exigence */
 .exigences { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
 .exigence {
-  background: var(--carte);
+  background: var(--famille-fond);
   border: var(--trait) solid var(--encre);
   border-radius: var(--rayon);
   padding: 18px 20px;
+  overflow: hidden; /* la bande de tête suit les coins arrondis */
 }
 .exigence.niveau-alerte { border-color: var(--or-vif); box-shadow: inset 0 0 0 2px var(--or-vif); }
 .exigence.niveau-forte { border-color: var(--orange-risque); box-shadow: inset 0 0 0 2px var(--orange-risque); }
 .exigence.niveau-depasse { border-color: var(--corail); box-shadow: inset 0 0 0 2px var(--corail); }
 .risque-exigence { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; font-size: 14px; font-weight: 700; }
-.tete-exigence { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-.tete-exigence h4 { margin: 0; font-size: 18px; color: var(--orchidee); }
+.tete-exigence {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: -18px -20px 12px;
+  padding: 12px 20px;
+  background: var(--famille);
+  color: var(--famille-texte);
+}
+.tete-exigence h4 { margin: 0; font-size: 18px; color: inherit; }
+.tete-exigence .statut { color: var(--encre); }
+.tete-exigence .statut-absent { background: var(--carte); }
+/* Texte secondaire lisible sur les fonds de famille */
+.exigence .note, .exigence .chiffres .unite, .exigence .ecart { color: var(--encre); }
 .tete-exigence .source {
   margin-left: 8px;
   font-size: 11px;
   font-weight: 700;
-  color: var(--texte-doux);
+  color: inherit;
   border: 1.5px solid currentColor;
   border-radius: 6px;
   padding: 0 5px;
@@ -494,6 +528,7 @@ button { font: inherit; color: inherit; }
   padding: 12px 8px;
   vertical-align: bottom;
 }
+.synthese thead th[data-famille], .tableau thead th[data-famille] { background: var(--famille); color: var(--famille-texte); }
 .synthese tbody th { text-align: left; padding: 12px 8px 12px 14px; min-width: 110px; }
 .synthese thead th:first-child { padding-left: 14px; }
 .synthese td { padding: 10px 8px; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -560,6 +595,8 @@ button { font: inherit; color: inherit; }
 .tableau tbody th { text-align: left; font-weight: 700; }
 .tableau td, .tableau tbody th { padding: 8px 10px; vertical-align: top; }
 .tableau tbody tr + tr { border-top: 1.5px solid #e3e2e8; }
+.tableau-inconfort thead th { min-width: 120px; }
+.tableau-inconfort thead th:not(:first-child) { text-align: right; }
 .tableau .nombre { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .tableau .ref {
   display: inline-block;
@@ -677,6 +714,9 @@ th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
 .carte-ecarts + .carte { margin-top: 26px; }
 .legende-marges { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; font-weight: 700; }
 .item-marge { display: inline-flex; align-items: center; gap: 6px; }
+.legende-familles { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 10px; font-size: 13px; font-weight: 700; }
+.item-famille { display: inline-flex; align-items: center; gap: 6px; }
+.pastille-famille { width: 16px; height: 16px; background: var(--famille); border: 2px solid var(--encre); border-radius: 4px; }
 
 /* Mêmes colonnes pour les repères et les lignes : nom, piste, valeur, état */
 .ligne-ecart, .reperes-ecart {
@@ -685,8 +725,9 @@ th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
   column-gap: 12px;
   align-items: center;
 }
-.ligne-ecart { min-height: 38px; padding: 3px 8px; border-radius: var(--rayon-petit); }
-.reperes-ecart { margin-top: 10px; padding: 0 8px; font-size: 12px; color: var(--texte-doux); }
+.ligne-ecart { min-height: 38px; padding: 3px 8px; border-left: 8px solid var(--famille); border-radius: var(--rayon-petit); }
+.ligne-ecart + .ligne-ecart { margin-top: 3px; }
+.reperes-ecart { margin-top: 10px; padding: 0 8px 0 16px; font-size: 12px; color: var(--texte-doux); }
 .reperes-ecart span:first-child { grid-column: 2; grid-row: 1; justify-self: start; }
 .reperes-ecart span:last-child { grid-column: 2; grid-row: 1; justify-self: end; }
 .nom-ecart { font-weight: 700; }
@@ -745,7 +786,7 @@ th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
   padding: 6px 0;
 }
 .ligne-calcul + .ligne-calcul { border-top: 1px dashed #dcdbe2; }
-.nom-calcul { font-weight: 700; }
+.nom-calcul { padding-left: 8px; border-left: 6px solid var(--famille); font-weight: 700; }
 .formule { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
 .formule .note { margin: 0; }
 .signe-calcul { font-weight: 800; }
@@ -788,6 +829,7 @@ th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
   padding: 6px 10px;
   background: var(--carte);
   border: 2px solid var(--encre);
+  border-left: 8px solid var(--famille);
   border-radius: var(--rayon-petit);
 }
 .risque.niveau-alerte { background: #fff6cc; }
@@ -850,7 +892,7 @@ th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
   line-height: 1.25;
 }
 .boite-ic.avec-seuil, .total-ic { border-width: 3px; }
-.boite-ic.avec-seuil { background: var(--teinte); color: var(--teinte-texte); }
+.boite-ic.avec-seuil { background: var(--famille); color: var(--famille-texte); border-color: var(--famille); }
 .libelle-ic { font-size: 13px; font-weight: 700; }
 .valeur-ic { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .valeur-autre { font-size: 17px; }

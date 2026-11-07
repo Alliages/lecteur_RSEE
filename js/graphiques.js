@@ -198,7 +198,7 @@ const CalculsGraphiques = (() => {
       const ev = EvaluationIndicateurs.evaluer(def, ind);
       const calculable = ev.valeur !== null && ev.seuil !== null && ev.seuil !== 0;
       return {
-        cle: e.cle, libelle: e.libelle, couleur: e.couleur, unite: def.unite, decimales: def.decimales,
+        cle: e.cle, libelle: e.libelle, couleur: e.couleur, famille: def.famille, unite: def.unite, decimales: def.decimales,
         valeur: ev.valeur, seuil: ev.seuil, statut: ev.statut,
         ecart: calculable ? ((ev.valeur - ev.seuil) / ev.seuil) * 100 : null,
       };

@@ -8,7 +8,7 @@
 const OngletIndicateurs = (() => {
   const {
     ESP, UNITE_IC, LIBELLES_STATUT, SYMBOLES_STATUT, el, formatNombre, formatSigne, pluriel, creer,
-    creerTableau, niveauxMarge, logoNiveau, legendeMarges, section,
+    creerTableau, niveauxMarge, logoNiveau, legendeMarges, legendeFamilles, section,
   } = Commun;
 
   const NOTE_COMPOSITION = `Valeurs en ${UNITE_IC}, lues dans le RSEE. Chaque total s'ajoute au bloc suivant : Ic construction + Ic eau + Ic énergie = Ic bâtiment, puis + Ic parcelle = Ic projet.`;
@@ -70,6 +70,7 @@ const OngletIndicateurs = (() => {
     const niveau = niveauExigence(ev);
     const carte = creer("article", "exigence niveau-" + niveau);
     carte.dataset.niveau = niveau;
+    carte.dataset.famille = ev.def.famille;
     const tete = creer("div", "tete-exigence");
     const titre = creer("h4", null, ev.def.libelle);
     titre.append(creer("span", "source", ev.def.source));
@@ -175,6 +176,7 @@ const OngletIndicateurs = (() => {
     const seuil = def.seuil ? ind[def.seuil] ?? null : null;
     if (seuil !== null) {
       boite.classList.add("avec-seuil");
+      boite.dataset.famille = EvaluationIndicateurs.familleDe(cle);
       boite.append(creer("span", "seuil-ic", `seuil ${formatNombre(seuil, 1)}`));
     }
     return boite;
@@ -254,6 +256,7 @@ const OngletIndicateurs = (() => {
   function ligneCalcul(eq) {
     const ligne = creer("div", "ligne-calcul");
     ligne.dataset.cle = eq.cle;
+    ligne.dataset.famille = EvaluationIndicateurs.familleDe(eq.cle);
     ligne.append(creer("span", "nom-calcul", eq.libelle));
     const formule = creer("div", "formule");
     const signe = (texte) => creer("span", "signe-calcul", texte);
@@ -289,6 +292,7 @@ const OngletIndicateurs = (() => {
     if (dh.length) {
       const ligne = creer("div", "ligne-calcul");
       ligne.dataset.cle = "dh";
+      ligne.dataset.famille = EvaluationIndicateurs.familleDe("dh");
       const formule = creer("div", "formule");
       formule.append(termeCalcul(dh.map((v) => formatNombre(v)).join(" / "), "°C.h", "resultat-calcul"), creer("span", "note", "par groupe, lu dans le RSEE"));
       ligne.append(creer("span", "nom-calcul", "DH max"), formule);
@@ -335,6 +339,7 @@ const OngletIndicateurs = (() => {
     for (const e of liste) {
       const li = creer("li", "risque niveau-" + e.niveau);
       li.dataset.niveau = e.niveau;
+      li.dataset.famille = e.famille;
       const nom = creer("span", "nom-risque", e.libelle);
       if (avecSource) nom.append(creer("span", "source-risque", e.source));
       const absolu = formatNombre(Math.abs(e.valeur - e.seuil), e.decimales);
@@ -372,10 +377,42 @@ const OngletIndicateurs = (() => {
     return g;
   }
 
+  // Heures d'inconfort de chaque groupe, lues dans le RSET (mêmes colonnes que la fiche PDF).
+  // groupes : groupes_dh du nœud ; nomGroupe : libellé de la ligne
+  function tableauInconfort(groupes, nomGroupe) {
+    const colonne = (titre) => [titre, null, EvaluationIndicateurs.familleDe("dh")];
+    const { enveloppe, tbody } = creerTableau("tableau tableau-inconfort", [
+      colonne("Groupe"),
+      colonne("DH (°C.h)"),
+      colonne("Nb d'heures pour lesquelles la t° opérative est sup. à la t° d'inconfort"),
+      colonne("Nb d'heures pour lesquelles la t° opérative est sup. à la t° d'inconfort +1°"),
+      colonne("Nb d'heures pour lesquelles la t° opérative est sup. à la t° d'inconfort +2°"),
+    ]);
+    const cellule = (n, dec = 0) => creer("td", "nombre", n === null || n === undefined ? "–" : formatNombre(n, dec));
+    for (const g of groupes) {
+      const tr = creer("tr");
+      tr.append(creer("th", null, nomGroupe(g)), cellule(g.dh, 1), cellule(g.nb_h_inconf), cellule(g.nb_h_inconf_1), cellule(g.nb_h_inconf_2));
+      tbody.append(tr);
+    }
+    return enveloppe;
+  }
+
+  // Section des heures d'inconfort, absente si le nœud n'a aucun groupe
+  function sectionInconfort(noeud) {
+    const groupes = noeud.indicateurs.groupes_dh || [];
+    if (groupes.length === 0) return [];
+    // Bâtiment à plusieurs zones : la zone précède le groupe, comme dans la fiche PDF
+    const zones = noeud.type === "batiment" && noeud.zones.length > 1 ? noeud.zones : [];
+    const nomGroupe = (g) => [zones.find((z) => z.index === g.zone)?.nom, g.nom].filter(Boolean).join(" / ");
+    return [section("Heures d'inconfort", tableauInconfort(groupes, nomGroupe))];
+  }
+
   // Tableau des écarts du projet : une ligne par bâtiment, une colonne par exigence
   function tableauProjet() {
     const niveaux = niveauxMarge("reglementaire");
-    const { enveloppe, tbody } = creerTableau("synthese", ["Bâtiment", ...REGLAGES_GRAPHIQUES.ecarts.map((e) => e.libelle)]);
+    const { enveloppe, tbody } = creerTableau("synthese", [
+      "Bâtiment", ...REGLAGES_GRAPHIQUES.ecarts.map((e) => [e.libelle, null, EvaluationIndicateurs.familleDe(e.cle)]),
+    ]);
     for (const b of Etat.modele.batiments) {
       const tr = creer("tr");
       tr.append(creer("th", null, b.nom));
@@ -428,7 +465,7 @@ const OngletIndicateurs = (() => {
         blocs.push(
           ajouterRisques(bandeau, liste),
           section("Calcul des seuils", calculSeuils(entrees, entrees.length > 1, avecPlusieursZones(batiments))),
-          section("Écarts aux seuils", legendeMarges(niveauxMarge("reglementaire")), tableauProjet(),
+          section("Écarts aux seuils", legendeFamilles(), legendeMarges(niveauxMarge("reglementaire")), tableauProjet(),
             creer("p", "note", "Écart = (valeur − seuil) / seuil ; valeur / seuil en dessous. DH : groupe le plus proche de son seuil. Détail en sélectionnant un bâtiment. Unités : Ic en " + UNITE_IC + ", Bbio en points, Cep et Cep,nr en kWhep/m²/an, DH en °C.h.")),
           section("Risques", listeRisques(liste, nbBat > 1, "reglementaire")),
           section("Composition de l'Ic", ...compositions, creer("p", "note", NOTE_COMPOSITION))
@@ -443,7 +480,8 @@ const OngletIndicateurs = (() => {
           ajouterRisques(bandeauVerdict(evaluations, noeud.nom, "reglementaire"), liste),
           section("Calcul des seuils", calculSeuils(entrees, false, noeud.zones.length > 1)),
           section("Risques", listeRisques(liste, false, "reglementaire")),
-          section("Exigences réglementaires", grilleExigences(evaluations, "reglementaire")),
+          section("Exigences réglementaires", legendeFamilles(), grilleExigences(evaluations, "reglementaire")),
+          ...sectionInconfort(noeud),
           section("Composition de l'Ic", composition(noeud.indicateurs, false), creer("p", "note", NOTE_COMPOSITION))
         );
         break;
@@ -458,7 +496,8 @@ const OngletIndicateurs = (() => {
             " : les valeurs de zone sont données pour information. L'exigence DH s'applique à chaque groupe."),
           section("Calcul des seuils", calculSeuils([{ zone: noeud, batiment: parent, titre: noeud.nom }], false, false)),
           section("Risques", listeRisques(liste, false, "information")),
-          section("Valeurs de la zone", grilleExigences(evaluations, "information")),
+          section("Valeurs de la zone", legendeFamilles(), grilleExigences(evaluations, "information")),
+          ...sectionInconfort(noeud),
           section("Composition de l'Ic", composition(noeud.indicateurs, true), creer("p", "note", NOTE_COMPOSITION))
         );
         break;

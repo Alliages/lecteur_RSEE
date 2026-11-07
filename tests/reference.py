@@ -75,6 +75,9 @@ def indicateurs_reference(racine):
                     "index": texte(g, "Index"), "batiment": texte(b, "Index"), "zone": texte(z, "Index"),
                     "dh": nombre(g, "O_NbDegresHeures"), "dh_max": nombre(g, "O_NbDegresHeures_max"),
                     "inconfort": texte(g, "Index") in inconfort,
+                    "nb_h_inconf": nombre(g, "O_Nb_h_inconf"),
+                    "nb_h_inconf_1": nombre(g, "O_Nb_h_inconf_1"),
+                    "nb_h_inconf_2": nombre(g, "O_Nb_h_inconf_2"),
                 })
     return bat, zon, groupes
 
@@ -193,6 +196,8 @@ def reference(chemin_fichier, nomenclature=None):
         "version_rset": texte(racine, "RSET/Entree_Projet/Version"),
     }
 
+    ascenseurs = {texte(b, "Index"): len(b.findall("Ascenseur_Collection/Ascenseur"))
+                  for b in racine.findall("RSET/Entree_Projet/Batiment_Collection/Batiment")}
     batiments, refs_inconnues = [], set()
     for b in entree.findall("batiment"):
         zones = []
@@ -205,6 +210,7 @@ def reference(chemin_fichier, nomenclature=None):
                 "sref": nombre(z, "sref"),
                 "n_occ": nombre(z, "n_occ"),
                 "nb_logement": nombre(z, "nb_logement"),
+                "logement": texte(z, "usage") in ("1", "2"),
                 "nb_composants": compter(contrib, "donnees_composant"),
                 "nb_services": compter(contrib, "donnees_service"),
             })
@@ -216,12 +222,15 @@ def reference(chemin_fichier, nomenclature=None):
                     if s.get("ref") not in nomenclature["sous_lots"]:
                         refs_inconnues.add("sous-lot " + str(s.get("ref")))
         idx = texte(b, "index")
+        zones_logement = [z for z in zones if z["logement"]]
         batiments.append({
             "index": idx,
             "nom": texte(b, "nom") or noms_bat.get(idx) or "Bâtiment " + idx,
             "sref": nombre(b, "sref"),
             "nb_composants": sum(z["nb_composants"] for z in zones),
             "nb_services": sum(z["nb_services"] for z in zones),
+            "nb_logement": sum(z["nb_logement"] or 0 for z in zones_logement) if zones_logement else None,
+            "nb_ascenseurs": ascenseurs.get(idx),
             "zones": zones,
         })
 

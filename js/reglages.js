@@ -9,7 +9,7 @@
 
 const REGLAGES = {
   // Version affichée (doit rester identique au fichier VERSION)
-  version: "0.9.3",
+  version: "0.9.4",
 
   // Extensions acceptées à l'import
   extensions_acceptees: [".xml"],
@@ -31,6 +31,10 @@ const REGLAGES = {
   // Format des nombres affichés
   langue: "fr-FR",
   decimales_surface: 1,
+
+  // Codes d'usage d'une zone de logement (individuel ou collectif) : seules ces zones ont un
+  // nombre de logements significatif (le champ vaut 0, 1 ou plus sur des bureaux)
+  usages_logement: ["1", "2"],
 
   // Unité des Ic dans les onglets (celle des graphiques est dans js/reglages_graphiques.js)
   unite_ic: "kg éq. CO₂/m²",

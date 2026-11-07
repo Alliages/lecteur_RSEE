@@ -8,7 +8,7 @@
 const OngletSynthese = (() => {
   const {
     ICONES, FONDS_TUILES, ESP, el, formatSigne, creer, pastilleIcone, pastilles, decrire,
-    niveauxMarge, logoNiveau, legendeMarges,
+    niveauxMarge, logoNiveau, legendeMarges, legendeFamilles,
   } = Commun;
 
   function afficherDetail(noeud, parent) {
@@ -49,6 +49,7 @@ const OngletSynthese = (() => {
     const def = niveaux[niveau];
     const ligne = creer("div", "ligne-ecart niveau-" + niveau);
     ligne.dataset.niveau = niveau;
+    ligne.dataset.famille = e.famille;
 
     const piste = creer("div", "piste-ecart");
     piste.setAttribute("aria-hidden", "true"); // les valeurs sont données en texte à côté
@@ -90,7 +91,7 @@ const OngletSynthese = (() => {
     const niveaux = niveauxMarge(noeud.type === "zone" ? "information" : "reglementaire");
 
     const carte = creer("article", "carte carte-ecarts");
-    carte.append(creer("h3", null, "Écart aux seuils réglementaires"), legendeMarges(niveaux));
+    carte.append(creer("h3", null, "Écart aux seuils réglementaires"), legendeFamilles(), legendeMarges(niveaux));
 
     const reperes = creer("div", "reperes-ecart");
     reperes.setAttribute("aria-hidden", "true");

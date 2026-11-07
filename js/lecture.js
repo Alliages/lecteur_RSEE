@@ -241,6 +241,10 @@ const LectureRSEE = (() => {
             dh: nombre(g, "O_NbDegresHeures"),
             dh_max: nombre(g, "O_NbDegresHeures_max"),
             inconfort: inconfort.has(index),
+            // Heures où la température opérative dépasse la température d'inconfort (+0, +1, +2 °C)
+            nb_h_inconf: nombre(g, "O_Nb_h_inconf"),
+            nb_h_inconf_1: nombre(g, "O_Nb_h_inconf_1"),
+            nb_h_inconf_2: nombre(g, "O_Nb_h_inconf_2"),
           });
         }
       }
@@ -265,6 +269,16 @@ const LectureRSEE = (() => {
           bruit: bruit.length ? Math.max(...bruit) : null,
         };
       }
+    }
+    return res;
+  }
+
+  // Nombre d'ascenseurs décrits dans le RSET, par index de bâtiment
+  function ascenseursRSET(racine) {
+    const res = {};
+    const collection = suivre(racine, REGLAGES.blocs.energie + "/Entree_Projet/Batiment_Collection");
+    for (const b of enfants(collection, "Batiment")) {
+      res[texte(b, "Index")] = enfants(enfant(b, "Ascenseur_Collection"), "Ascenseur").length;
     }
     return res;
   }
@@ -453,6 +467,7 @@ const LectureRSEE = (() => {
       nom: noms.zones[index] || "Zone " + index,
       sref: nombre(z, "sref"),
       usage: texte(z, "usage"), // code (libellé : js/codes.js)
+      logement: REGLAGES.usages_logement.includes(texte(z, "usage")),
       n_occ: nombre(z, "n_occ"),
       nb_logement: nombre(z, "nb_logement"),
       nb_composants: compter(enfant(z, "contributeur"), "donnees_composant"),
@@ -467,6 +482,7 @@ const LectureRSEE = (() => {
   function lireBatiment(b, noms) {
     const index = texte(b, "index");
     const zones = enfants(b, "zone").map((z) => lireZone(z, noms, index));
+    const zonesLogement = zones.filter((z) => z.logement);
     return {
       type: "batiment",
       index,
@@ -477,6 +493,8 @@ const LectureRSEE = (() => {
       duree_chantier: nombre(b, "duree_chantier"),
       nb_composants: zones.reduce((s, z) => s + z.nb_composants, 0),
       nb_services: zones.reduce((s, z) => s + z.nb_services, 0),
+      // Total des zones de logement ; null pour un bâtiment sans logement
+      nb_logement: zonesLogement.length ? zonesLogement.reduce((s, z) => s + (z.nb_logement || 0), 0) : null,
       zones,
     };
   }
@@ -541,9 +559,11 @@ const LectureRSEE = (() => {
     const thermique = indicateursRSET(racine);
     const admin = informationsBatiments(racine);
     const entreesSeuils = parametresSeuils(racine);
+    const ascenseurs = ascenseursRSET(racine);
     const alertesIndicateurs = [];
     for (const b of modele.batiments) {
       b.informations = admin.batiments[b.index] || {};
+      b.nb_ascenseurs = ascenseurs[b.index] ?? null;
       b.impacts_lots = envi.lots_batiments[b.index] || {};
       b.indicateurs = indicateursDe(
         envi.batiments[b.index],

@@ -69,9 +69,14 @@ const OngletInformations = (() => {
     return carte;
   }
 
-  // Tableau des zones d'un bâtiment (usage, surfaces)
+  // Tableau des zones d'un bâtiment (usage, surfaces). Logements pour les zones de logement,
+  // occupants pour les autres ; les deux colonnes seulement dans un bâtiment mixte.
   function tableauZones(batiment) {
-    const { enveloppe, tbody } = creerTableau("tableau", ["Zone", "Usage", "Sref", "SHAB", "Occupants"]);
+    const avecLogements = batiment.zones.some((z) => z.logement);
+    const avecOccupants = batiment.zones.some((z) => !z.logement);
+    const { enveloppe, tbody } = creerTableau("tableau", [
+      "Zone", "Usage", "Sref", "SHAB", ...(avecLogements ? ["Logements"] : []), ...(avecOccupants ? ["Occupants"] : []),
+    ]);
     for (const z of batiment.zones) {
       const tr = creer("tr");
       tr.append(creer("th", null, z.nom));
@@ -81,9 +86,10 @@ const OngletInformations = (() => {
       tr.append(
         usage,
         creer("td", "nombre", nombreOuNull(z.sref, "m²", 1) || "–"),
-        creer("td", "nombre", nombreOuNull(z.informations.shab, "m²", 1) || "–"),
-        creer("td", "nombre", nombreOuNull(z.n_occ, "") || "–")
+        creer("td", "nombre", nombreOuNull(z.informations.shab, "m²", 1) || "–")
       );
+      if (avecLogements) tr.append(creer("td", "nombre", (z.logement && nombreOuNull(z.nb_logement, "")) || "–"));
+      if (avecOccupants) tr.append(creer("td", "nombre", (!z.logement && nombreOuNull(z.n_occ, "")) || "–"));
       tbody.append(tr);
     }
     return enveloppe;
@@ -162,13 +168,15 @@ const OngletInformations = (() => {
         blocs.push(
           carteInfos(noeud.nom, [
             ["Usage principal", valeurCodee("usage", inf.usage_principal)],
-            ["Type de travaux", valeurCodee("type_travaux", inf.type_travaux)],
+            ...(noeud.nb_logement !== null ? [["Nombre de logements", nombreOuNull(noeud.nb_logement, "")]] : []),
+            ["Type de construction", valeurCodee("type_travaux", inf.type_travaux)],
             ["Sref", nombreOuNull(noeud.sref, "m²", 1)],
             ["SHAB", nombreOuNull(inf.shab, "m²", 1)],
             ["Surface utile (SU)", inf.su ? nombreOuNull(inf.su, "m²", 1) : null],
-            ["Occupants", nombreOuNull(inf.n_occ, "")],
-            ["Niveaux en sous-sol", nombreOuNull(inf.nb_niv_ssol, "")],
-            ["Niveaux hors sol", nombreOuNull(inf.nb_niv_surface, "")],
+            ...(noeud.nb_logement === null || noeud.zones.some((z) => !z.logement) ? [["Occupants", nombreOuNull(inf.n_occ, "")]] : []),
+            ["Nombre de niveaux en sous-sol", nombreOuNull(inf.nb_niv_ssol, "")],
+            ["Nombre de niveaux en surface", nombreOuNull(inf.nb_niv_surface, "")],
+            ["Nombre d'ascenseurs", nombreOuNull(noeud.nb_ascenseurs, "")],
             ["Places de parking (infra / supra / ext.)",
               [inf.parking_infra, inf.parking_supra, inf.parking_ext].some((v) => v !== null && v !== undefined)
                 ? [inf.parking_infra, inf.parking_supra, inf.parking_ext].map((v) => (v === null || v === undefined ? "–" : formatNombre(v))).join(" / ")
@@ -189,8 +197,9 @@ const OngletInformations = (() => {
             ["Usage", valeurCodee("usage", noeud.usage)],
             ["Sref", nombreOuNull(noeud.sref, "m²", 1)],
             ["SHAB", nombreOuNull(noeud.informations.shab, "m²", 1)],
-            ["Occupants", nombreOuNull(noeud.n_occ, "")],
-            ["Logements", nombreOuNull(noeud.nb_logement, "")],
+            noeud.logement
+              ? ["Nombre de logements", nombreOuNull(noeud.nb_logement, "")]
+              : ["Occupants", nombreOuNull(noeud.n_occ, "")],
           ]),
           carteCoefficients(noeud)
         );
