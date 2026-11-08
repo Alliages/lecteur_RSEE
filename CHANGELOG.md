@@ -9,6 +9,8 @@
 - Zone sismique : note « souvent laissée à sa valeur par défaut (1, très faible) par les
   logiciels, à vérifier » (Très faible relevé à Nice, en Haute-Savoie, dans le Puy-de-Dôme…).
 - Tests : altitude et notes de localisation ; un RSEE de Sète ajouté aux RSEE de test.
+- README : parties utilisateurs et détails techniques séparées, captures (RSEE anonymisé), schéma des
+  indicateurs, organigramme des fichiers.
 
 ## 0.9.6 — 2026-11-07
 
