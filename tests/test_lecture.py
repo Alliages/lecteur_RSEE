@@ -410,6 +410,12 @@ def main():
             if code_dep:
                 cle_dep = code_dep.zfill(2) if code_dep.isdigit() else code_dep
                 verifier(f"{cle_dep} – {departements[cle_dep]}" in infos, f"{chemin.name} : département {code_dep}")
+            # Localisation : note sur la zone sismique ; note d'altitude seulement si Datas_Comp contredit le RSET
+            loc = attendu["informations"]["localisation"]
+            if loc["zone_sismique"]:
+                verifier("souvent laissée à sa valeur par défaut" in infos, f"{chemin.name} : note zone sismique absente")
+            ecart_alt = loc["altitude_datas_comp"] is not None and loc["altitude"] != loc["altitude_datas_comp"]
+            verifier(("probablement mal saisie" in infos) == ecart_alt, f"{chemin.name} : note d'altitude (écart {ecart_alt})")
             # Composants : identifiants INIES en lien vers base-inies.fr, nouvel onglet
             page.click("[data-onglet=composants]")
             liens_inies = page.eval_on_selector_all("a[href*='base-inies.fr']", "l => l.map(a => [a.href, a.target, a.rel])")

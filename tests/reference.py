@@ -25,6 +25,11 @@ def nombre(el, chemin):
         return None
 
 
+def entier(t):
+    """Entier lu dans un texte, ou None."""
+    return int(float(t)) if t else None
+
+
 def texte(el, chemin):
     """Texte au bout du chemin, blancs internes réduits à une espace, ou None."""
     t = el.findtext(chemin) if el is not None else None
@@ -160,6 +165,8 @@ def informations_reference(racine):
             "zone_climatique": texte(op, "zone_climatique"),
             "departement": texte(racine, "RSET/Sortie_Projet/Departement"),
             "zone_sismique": texte(op, "zone_sismique"),
+            "altitude": entier(texte(racine, "RSET/Entree_Projet/Simu/Altitude") or texte(op, "altitude")),
+            "altitude_datas_comp": entier(texte(op, "altitude")),
         },
         "acteurs": acteurs,
     }

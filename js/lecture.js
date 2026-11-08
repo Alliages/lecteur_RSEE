@@ -320,6 +320,10 @@ const LectureRSEE = (() => {
     const generales = suivre(racine, REGLAGES.blocs.administratif + "/donnees_generales");
     const op = enfant(generales, "operation");
     const sortieRSET = suivre(racine, REGLAGES.blocs.energie + "/Sortie_Projet");
+    // Altitude : classe du RSET (source retenue par l'observatoire OPEE) ;
+    // celle de Datas_Comp n'est qu'un repli et peut être mal saisie
+    const altitudeRSET = nombre(suivre(racine, REGLAGES.blocs.energie + "/Entree_Projet/Simu"), "Altitude");
+    const altitudeDC = nombre(op, "altitude");
     return {
       operation: {
         nom: texte(op, "nom"),
@@ -336,7 +340,8 @@ const LectureRSEE = (() => {
         zone_climatique: texte(op, "zone_climatique"),
         departement: texte(sortieRSET, "Departement"),
         zone_sismique: texte(op, "zone_sismique"),
-        altitude: nombre(op, "altitude"),
+        altitude: altitudeRSET ?? altitudeDC,
+        altitude_datas_comp: altitudeDC,
         geotech: texte(op, "geotech"),
         sol_pollution: texte(op, "sol_pollution"),
       },

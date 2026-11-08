@@ -112,6 +112,13 @@ const OngletInformations = (() => {
         const inf = Etat.modele.informations;
         const op = inf.operation;
         const loc = inf.localisation;
+        const notesLocalisation = [];
+        if (loc.zone_sismique !== null) {
+          notesLocalisation.push("Zone sismique : souvent laissée à sa valeur par défaut (1, très faible) par les logiciels, même en zone sismique. À vérifier.");
+        }
+        if (loc.altitude_datas_comp !== null && loc.altitude !== null && loc.altitude_datas_comp !== loc.altitude) {
+          notesLocalisation.push(`Altitude : classe lue dans le RSET. Les données administratives indiquent une autre classe (${libelleCode("altitude", loc.altitude_datas_comp) || "code " + loc.altitude_datas_comp}), probablement mal saisie.`);
+        }
         blocs.push(
           carteInfos("Opération", [
             ["Nom", op.nom],
@@ -133,7 +140,7 @@ const OngletInformations = (() => {
             ["Altitude", valeurCodee("altitude", loc.altitude)],
             ["Nature géotechnique du sol", valeurCodee("geotech", loc.geotech)],
             ["Pollution du sol", valeurCodee("sol_pollution", loc.sol_pollution)],
-          ])
+          ], ...notesLocalisation.map((t) => creer("p", "note", t)))
         );
         // Acteurs : une carte par acteur dans une grille
         const acteurs = creer("div", "grille-acteurs");

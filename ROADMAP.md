@@ -20,7 +20,7 @@ Seule liste de suivi du projet. Cocher au fil des versions et reporter dans CHAN
 - [ ] Code des PEP extrapolées : non identifiable dans les RSEE de test (les codes 4, 8 et 9 n'y apparaissent pas ; `id_fiche_mere` seulement sur les fiches configurées). En attendant, elles comptent comme PEP
 - [ ] Liste des indicateurs ACV `donnees/indicateurs_acv_RSEE.csv` : libellés déduits (références 1 à 24 et 101 à 136), à confirmer avec une source officielle ; contrôler les sommes 120 + 121 = 122 et 123 + 124 = 125, justes sur 4 bâtiments sur 8 seulement
 - [ ] Combinaisons de versions : `2025_1` et `2025_2` (2022.D1 / 2022.E2.1.0 / 2022.C2) absentes de la page du ministère ; date de diffusion de RSEnv 2022.C1.0.0 (28/02/2021) à confirmer, coquille probable
-- [ ] Code d'altitude du RSEE (0 = moins de 400 m, 1 = 400 à 800 m, 2 = plus de 800 m) : déduit, le code 2 n'apparaît pas dans les RSEE de test
+- [ ] Code d'altitude du RSEE (0 = moins de 400 m, 1 = 400 à 800 m, 2 = plus de 800 m) : 0 et 1 cohérents sur 19 RSEE (1 en Haute-Savoie et Haute-Loire) ; le code 2 n'apparaît que dans Datas_Comp de deux RSEE de Sète, où il est faux
 - [ ] Lien vers l'outil Seuils : 10 bâtiments de test sur 16 retrouvent exactement les seuils du RSEE. Écarts à comprendre : `2022_4` (Sref de 681,6 m² au RSEnv, 1 435 m² au RSET), `rsee.xml` BAT C (Ic construction 687,6 contre 654,6), un RSEE de test (Bbio 59,7 contre 58,3), bâtiments à plusieurs zones (écart inférieur à 1 %)
 - [ ] Calcul des seuils : un RSEE de test (RSET 2021.E1.0.0) s'écarte de 0,4 % de la formule, signalé à l'écran
 - [ ] Phase du projet : le code 5 apparaît dans 7 RSEE de test sur 14 mais pas dans la liste des phases (1 à 4), il reste affiché « code 5 »
@@ -46,6 +46,8 @@ Seule liste de suivi du projet. Cocher au fil des versions et reporter dans CHAN
 - [x] Dates au format long, département avec son nom, libellés des codes de localisation (stade, sismicité, géotechnique, pollution, altitude)
 - [x] Liens vers les fiches de la base INIES
 - [ ] Libellés à confirmer : stade d'avancement 3, nature géotechnique 2 et 12, altitude 2
+- [x] Altitude lue dans le RSET (comme OPEE), note si Datas_Comp diffère ; note sur la zone sismique souvent laissée par défaut
+- [ ] Département de Corse : le moteur RE2020 code 99 et 100 (d'après OPEE), à traduire en 2A et 2B
 - [x] Coefficients de modulation et détail du calcul des seuils
 
 ### Indicateurs

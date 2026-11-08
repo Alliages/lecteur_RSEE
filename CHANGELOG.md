@@ -1,5 +1,15 @@
 # CHANGELOG — lecteur_RSEE
 
+## 0.9.7 — 2026-11-08
+
+- Altitude lue dans le RSET (`Entree_Projet/Simu/Altitude`), source retenue par l'observatoire
+  OPEE ; celle des données administratives (Datas_Comp) n'est qu'un repli. Sur 19 RSEE, les deux
+  concordent sauf pour les deux RSEE de Sète (« Plus de 800 m » dans Datas_Comp) : une note
+  signale alors l'écart. Le lien vers l'outil Seuils reçoit aussi l'altitude du RSET.
+- Zone sismique : note « souvent laissée à sa valeur par défaut (1, très faible) par les
+  logiciels, à vérifier » (Très faible relevé à Nice, en Haute-Savoie, dans le Puy-de-Dôme…).
+- Tests : altitude et notes de localisation ; un RSEE de Sète ajouté aux RSEE de test.
+
 ## 0.9.6 — 2026-11-07
 
 - Dates au format long (« 9 novembre 2023 », « 1er janvier 2022 »), dans les Informations et
