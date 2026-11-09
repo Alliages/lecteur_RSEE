@@ -28,7 +28,7 @@ const CalculsGraphiques = (() => {
 
   /* ---------- Contributeurs ---------- */
 
-  // Valeurs arrondies à l'unité, total = somme des arrondis (méthode du dashboard OPEE).
+  // Valeurs arrondies à l'unité, total = somme des arrondis.
   // Parts sur composants + chantier + énergie : l'eau n'a pas de part.
   // saisie : Ic énergie entré à la main quand le RSEE ne le donne pas.
   function contributeurs(ind, saisie) {
@@ -119,7 +119,7 @@ const CalculsGraphiques = (() => {
   }
 
   // Type d'une fiche pour le comptage (clé de REGLAGES_GRAPHIQUES.types_fiches).
-  // Le forfaitaire rejoint « Autres », comme le conventionnel du dashboard OPEE.
+  // Le forfaitaire rejoint « Autres », comme le conventionnel.
   function typeFiche(l) {
     const nature = natureFiche(l);
     if (nature === "fdes_configuree" || nature === "fiche_configuree") return "configuree";

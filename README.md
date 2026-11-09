@@ -52,7 +52,7 @@ chaque groupe DH a été rattaché, d'après la structure du RSET, à vérifier.
 | **Informations** | Opération (n° de permis, dates, avancement), localisation (zone climatique, altitude, zone sismique, sol, carte), acteurs (maîtrise d'ouvrage et d'œuvre, bureaux d'études), bâtiments, zones (usage, Sref, logements, niveaux, ascenseurs) et parcelle. |
 | **Indicateurs** | Exigences par famille (bioclimatique, énergie, carbone, confort d'été), calcul détaillé des seuils (coefficients de modulation), consommation d'énergie finale par poste (somme = Cef, mobilier pour information), heures d'inconfort, risques, et composition de l'Ic. |
 | **Composants** | Impacts par lot et sous-lot, puis tableau de tous les composants et services : fiche, type de donnée, quantité, unité, DVE. Recherche, filtres (contributeur, lot, type de fiche) et tri par colonne. Identifiants INIES en lien vers base-inies.fr. |
-| **Graphiques du HUB** | Graphiques du dashboard OPEE du [HUB des prescripteurs bas carbone](https://www.ifpeb.fr/travaux/le-hub-des-prescripteurs-bas-carbone/) appliqués au bâtiment ouvert : impact par contributeur et par lot, sous-lots les plus impactants, écarts aux seuils, fiches par type et par nature, stock de carbone face au label biosourcé. Chaque graphique a son tableau de données (« Voir les données »). |
+| **Graphiques du HUB** | Graphiques aux couleurs du [HUB des prescripteurs bas carbone](https://www.ifpeb.fr/travaux/le-hub-des-prescripteurs-bas-carbone/) appliqués au bâtiment ouvert : impact par contributeur et par lot, sous-lots les plus impactants, écarts aux seuils, fiches par type et par nature, stock de carbone face au label biosourcé. Chaque graphique a son tableau de données (« Voir les données »). |
 
 ![Onglet Indicateurs : calcul des seuils d'une zone](docs/capture_indicateurs.png)
 
@@ -202,7 +202,7 @@ flowchart TD
 | `js/composants.js` | Regroupement des lignes d'un bâtiment (fusion des lignes identiques entre zones), filtres et tri. |
 | `js/seuils.js` | Mise en forme de la modulation des seuils lue dans le RSEE, contrôle de l'écart, lien vers l'outil externe. |
 | `js/graphiques.js` | Calculs des graphiques (sommes, comptages, comparaisons) à partir du modèle. |
-| `js/graphiques_traces.js` | Tracé Plotly des graphiques 2 à 8 du dashboard OPEE, transposés à un bâtiment. |
+| `js/graphiques_traces.js` | Tracé Plotly des graphiques 2 à 8 pour un bâtiment. |
 | `js/plotly-basic.min.js` | Bibliothèque Plotly.js basic 2.35.2. |
 | `js/interface_commun.js` | Éléments communs : icônes, état du modèle ouvert, légendes, sections, tableaux. |
 | `js/onglet_*.js` | Un fichier par onglet : synthèse, informations, indicateurs, composants, graphiques. |

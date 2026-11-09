@@ -68,7 +68,7 @@ Seule liste de suivi du projet. Cocher au fil des versions et reporter dans CHAN
 - [x] Impacts par lot : somme des phases quand tous les lots valent 0 dans le RSEE
 
 ### Graphiques
-Modèles : graphiques 2 à 8 du dashboard OPEE (Gx ci-dessous), transposés à un seul bâtiment.
+Modèles : graphiques 2 à 8 (Gx ci-dessous), transposés à un seul bâtiment.
 Onglet « Graphiques du HUB » : une barre pour un bâtiment ou une zone, une barre par bâtiment pour le projet, pas de graphique pour la parcelle.
 Ordre : contributeurs, lots, écarts aux seuils, sous-lots, types de fiches, nature des fiches, StockC.
 Écartés à la demande : secteurs par contributeur, répartition par étape du cycle de vie.
@@ -90,7 +90,7 @@ Ordre : contributeurs, lots, écarts aux seuils, sous-lots, types de fiches, nat
 - [ ] Contrôle des combinaisons de versions Datas_Comp / RSET / RSEnv selon la date de dépôt du PC (tableaux de la page du ministère)
 - [ ] Export CSV du tableau des composants
 - [ ] Impression / PDF via feuille de style d'impression
-- [ ] Comparaison de deux RSEE (variantes) ; avec plusieurs RSEE, graphiques statistiques du dashboard OPEE (G4 médiane par matériau de structure, quartiles de G5)
+- [ ] Comparaison de deux RSEE (variantes) ; avec plusieurs RSEE, graphiques statistiques (G4 médiane par matériau de structure, quartiles de G5)
 
 
 ## Références
@@ -98,5 +98,5 @@ Ordre : contributeurs, lots, écarts aux seuils, sous-lots, types de fiches, nat
   (arborescence projet/bâtiment/zone/parcelle ; onglets Informations, Indicateurs, Composants, Fiches impactantes)
 - Izuba Pleiades — Energie-carbone / Résultats : https://docs.izuba.fr/v4/fr/index.php/Energie-carbone_/_R%C3%A9sultats?toc-id=505
   (tableau par contributeur, détail par étape / lot / usage, histogramme et secteurs, indicateurs de performance)
-- Dashboard OPEE — graphiques 2 à 8 du notebook marimo `OPEE_by_GM.py` v0.99j (dépôt Alliages/opee-python, Plotly)
+- Graphiques 2 à 8 (Plotly)
   (palette charte HUB, formes et calculs de chaque graphique)

@@ -156,7 +156,7 @@ Synthèse et réorganisation des graphiques.
 
 Onglet Graphiques (prévu en 0.9, avancé à la demande).
 
-- 9 graphiques repris du dashboard OPEE et transposés à un bâtiment : contributeurs,
+- 9 graphiques pour un bâtiment : contributeurs,
   secteurs, lots et macro-lots, sous-lots les plus impactants (top N réglable), étapes du
   cycle de vie, types de fiches, nature des fiches par lot avec cartes de macro-lots,
   écarts aux 6 seuils, StockC face au label biosourcé.

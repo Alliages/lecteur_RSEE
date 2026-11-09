@@ -1,6 +1,6 @@
 /* =====================================================================
    lecteur_RSEE — tracé des graphiques (Plotly)
-   Transpose les graphiques 2 à 8 du dashboard OPEE à un seul bâtiment :
+   Trace les graphiques 2 à 8 pour un seul bâtiment :
    une barre pour un bâtiment ou une zone, une barre par bâtiment pour le
    projet. Chaque fonction renvoie { traces, layout, tableau, notes } ou
    { message } si le graphique n'a pas de sens pour cette vue.

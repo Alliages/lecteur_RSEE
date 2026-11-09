@@ -1,8 +1,7 @@
 /* =====================================================================
    lecteur_RSEE — réglages des graphiques
-   Palette « charte HUB » et paramètres de l'onglet Graphiques, repris du
-   dashboard OPEE (graphiques 2 à 8). Le reste de l'interface garde sa
-   propre palette (css/style.css).
+   Palette « charte HUB » et paramètres de l'onglet Graphiques (graphiques
+   2 à 8). Le reste de l'interface garde sa propre palette (css/style.css).
    ===================================================================== */
 
 "use strict";
@@ -122,7 +121,7 @@ const REGLAGES_GRAPHIQUES = {
   ],
 
   // Types de fiches, de bas en haut de la pile.
-  // Les PEP extrapolées du dashboard OPEE ne sont pas identifiables dans un RSEE.
+  // Les PEP extrapolées ne sont pas identifiables dans un RSEE.
   types_fiches: [
     { cle: "fdes", libelle: "FDES", couleur: "#5F8C82", texte: "#FFFFFF" },
     { cle: "configuree", libelle: "Fiches configurées", couleur: "#55739B", hachure: "#5F8C82", texte: "#FFFFFF" },
@@ -132,7 +131,7 @@ const REGLAGES_GRAPHIQUES = {
   ],
 
   // Natures de fiches, de gauche à droite. Le RSEE ne dit pas si une fiche est
-  // individuelle ou collective : les natures du dashboard sont regroupées.
+  // individuelle ou collective : ces natures sont regroupées.
   // camp : « specifique » (FDES / PEP), « ded », « forfaitaire » ou « autres ».
   natures: [
     { cle: "fdes", libelle: "FDES", couleur: "#5F8C82", texte: "#FFFFFF", camp: "specifique" },
