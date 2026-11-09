@@ -19,6 +19,7 @@
 
   // Texte d'information affiché tant qu'aucun fichier n'est lu
   const INFO_INITIALE = el.infoFichier.textContent.trim();
+  const TITRE_ARBRE = el.titreArbre.textContent.trim();
 
   /* ---------- Arborescence ---------- */
 
@@ -151,8 +152,9 @@
     OngletGraphiques.reinitialiser();
     const duree = Math.round(performance.now() - debut);
     el.infoFichier.replaceChildren(
-      document.createTextNode(`${formatTaille(fichier.size)} · lu en ${formatNombre(duree)} ms, localement.`)
+      document.createTextNode(`${Etat.modele.type_fichier} · ${formatTaille(fichier.size)} · lu en ${formatNombre(duree)} ms, localement.`)
     );
+    el.titreArbre.textContent = `${TITRE_ARBRE} du ${Etat.modele.type_fichier}`;
     if (fichier.size > REGLAGES.taille_alerte) {
       el.infoFichier.append(document.createTextNode(" Fichier volumineux : l'affichage peut être lent."));
     }
@@ -162,6 +164,7 @@
       OngletGraphiques.liberer();
       Etat.modele = null;
       el.infoFichier.textContent = INFO_INITIALE;
+      el.titreArbre.textContent = TITRE_ARBRE;
       afficherErreur(texteErreur);
       afficherVide();
     }

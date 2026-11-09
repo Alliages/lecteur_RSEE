@@ -1,5 +1,27 @@
 # CHANGELOG — lecteur_RSEE
 
+## 0.9.8 — 2026-11-09
+
+- Lecture d'un RSET seul (XML sans partie environnementale RSEnv), sans changer l'affichage :
+  bâtiments et zones tirés de `RSET/Entree_Projet` (Sref et usage de Datas_Comp s'ils y sont),
+  Bbio, Cep, Cep,nr et DH par groupe ; Ic, composants, services et parcelle « non renseigné ».
+  Le modèle porte `rset_seul: true`. Seul un RSET sans bâtiment décrit est encore refusé.
+- Nature du fichier lu (RSEE, RSET ou RSEnv) en tête de la ligne « taille · durée de lecture » et
+  dans le titre de la colonne : « Arborescence du RSEE » (`type_fichier` dans le modèle).
+- Groupes DH : rattachés à la zone qui les contient dans les sorties D du RSET. Alertes dans le
+  contrôle du fichier : rattachement récapitulé pour un RSET seul ; zone des sorties qui contredit
+  celle des entrées ; groupe en inconfort absent des sorties par zone, alors rattaché d'après les
+  entrées (ou à aucune zone) ; groupe rattaché à une zone absente du fichier.
+- Indicateurs : section « Consommation d'énergie finale » (bâtiment, chacune de ses zones s'il en
+  a plusieurs, zone, et bâtiments du projet). Équation lue dans les sorties C du RSET : Chauffage +
+  Refroidissement + ECS + Éclairage + Auxil. ventilation + Auxil. distribution + Déplacement
+  (`O_Cef_imp_<poste>_annuel`) = Cef (`O_Cef_annuel`), en kWhef/m²/an. Mobilier affiché à part,
+  hors Cef, pour information. Écart signalé si la somme s'éloigne du Cef de plus de 0,4 (arrondis) ;
+  sur les RSEE et RSET de test, l'écart ne dépasse pas 0,1.
+- Tests : Cef et postes comparés à la référence Python, équation affichée, mobilier à part.
+- Tests : chaque RSEE de test privé de son RSEnv est relu comme RSET seul (zones, DH par groupe,
+  alertes, parcours des 5 onglets sans erreur).
+
 ## 0.9.7 — 2026-11-08
 
 - Altitude lue dans le RSET (`Entree_Projet/Simu/Altitude`), source retenue par l'observatoire

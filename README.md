@@ -37,8 +37,12 @@ parcelle, indicateurs face aux seuils, composants, graphiques.
 4. Lire le détail du nœud choisi à droite, et changer d'**onglet** en haut pour une autre lecture du même nœud.
 
 Le fichier doit être un RSEE au format XML. Une archive `.zip` est refusée (la décompresser d'abord), ainsi
-qu'un XML qui n'est pas un RSEE ou qui ne contient que la partie thermique (RSET) : un message explique le
-problème.
+qu'un XML qui n'est pas un RSEE : un message explique le problème.
+
+Un **RSET seul** (partie thermique, sans partie environnementale) est aussi lu, avec le même affichage :
+bâtiments et zones viennent du RSET, avec Bbio, Cep, Cep,nr et DH ; Ic, composants, services et parcelle
+restent « non renseigné ». Le contrôle du fichier (Synthèse du projet) le signale, et indique à quelle zone
+chaque groupe DH a été rattaché, d'après la structure du RSET, à vérifier.
 
 ## Les onglets
 
@@ -46,7 +50,7 @@ problème.
 |---|---|
 | **Synthèse** | Carte du nœud (surface, nombre de composants…) et écart de chaque exigence à son seuil : Bbio, Cep, Cep,nr, DH, Ic construction, Ic énergie. Un pictogramme indique conforme, marge < 10 %, marge < 5 % ou non conforme. |
 | **Informations** | Opération (n° de permis, dates, avancement), localisation (zone climatique, altitude, zone sismique, sol, carte), acteurs (maîtrise d'ouvrage et d'œuvre, bureaux d'études), bâtiments, zones (usage, Sref, logements, niveaux, ascenseurs) et parcelle. |
-| **Indicateurs** | Exigences par famille (bioclimatique, énergie, carbone, confort d'été), calcul détaillé des seuils (coefficients de modulation), heures d'inconfort, risques, et composition de l'Ic. |
+| **Indicateurs** | Exigences par famille (bioclimatique, énergie, carbone, confort d'été), calcul détaillé des seuils (coefficients de modulation), consommation d'énergie finale par poste (somme = Cef, mobilier pour information), heures d'inconfort, risques, et composition de l'Ic. |
 | **Composants** | Impacts par lot et sous-lot, puis tableau de tous les composants et services : fiche, type de donnée, quantité, unité, DVE. Recherche, filtres (contributeur, lot, type de fiche) et tri par colonne. Identifiants INIES en lien vers base-inies.fr. |
 | **Graphiques du HUB** | Graphiques du dashboard OPEE du [HUB des prescripteurs bas carbone](https://www.ifpeb.fr/travaux/le-hub-des-prescripteurs-bas-carbone/) appliqués au bâtiment ouvert : impact par contributeur et par lot, sous-lots les plus impactants, écarts aux seuils, fiches par type et par nature, stock de carbone face au label biosourcé. Chaque graphique a son tableau de données (« Voir les données »). |
 
@@ -214,7 +218,8 @@ flowchart TD
 1. `interface.js` reçoit le fichier (sélection ou dépôt) et le passe à `lecture.js`.
 2. `lecture.js` contrôle le format, puis construit le modèle (`Etat.modele`) : projet, bâtiments, zones,
    parcelle, avec leurs indicateurs, composants et services. Les blocs du RSEE sont reliés par leur index :
-   `Datas_Comp` (administratif), `RSET` (thermique), `RSEnv` (ACV).
+   `Datas_Comp` (administratif), `RSET` (thermique), `RSEnv` (ACV). Sans `RSEnv` (RSET seul), bâtiments et
+   zones sont lus dans `RSET/Entree_Projet` et le modèle porte `rset_seul: true`.
 3. Au choix d'un nœud de l'arborescence, l'onglet actif construit son affichage à partir du modèle, en
    s'appuyant sur `indicateurs.js`, `composants.js`, `seuils.js` ou `graphiques.js`.
 4. Aucun calcul réglementaire : sommes, comptages, comparaisons et mise en forme seulement.

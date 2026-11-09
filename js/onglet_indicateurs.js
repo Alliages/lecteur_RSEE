@@ -1,6 +1,7 @@
 /* =====================================================================
    lecteur_RSEE — onglet Indicateurs
-   Exigences, composition de l'Ic, calcul des seuils et risques.
+   Exigences, composition de l'Ic, calcul des seuils, risques,
+   consommation d'énergie finale par poste.
    ===================================================================== */
 
 "use strict";
@@ -320,6 +321,50 @@ const OngletIndicateurs = (() => {
     return bloc;
   }
 
+  /* ---------- Consommation d'énergie finale ---------- */
+
+  // Une ligne : postes + … = Cef, puis le mobilier (hors Cef) pour information.
+  // Renvoie null si le RSET ne donne ni postes ni total.
+  function ligneCef(ind, titre) {
+    const postes = ind.cef_postes || {};
+    const cef = ind.cef ?? null;
+    const valeurs = REGLAGES.postes_cef.map((p) => postes[p.cle] ?? null);
+    if (cef === null && valeurs.every((v) => v === null)) return null;
+    const ligne = creer("div", "ligne-calcul ligne-cef");
+    ligne.dataset.famille = EvaluationIndicateurs.familleDe("cep");
+    ligne.append(creer("span", "nom-calcul", titre));
+    const formule = creer("div", "formule");
+    const signe = (texte) => creer("span", "signe-calcul", texte);
+    REGLAGES.postes_cef.forEach((p, i) => {
+      if (i > 0) formule.append(signe("+"));
+      formule.append(termeCalcul(valeurs[i] === null ? "–" : formatNombre(valeurs[i], 1), p.libelle));
+    });
+    formule.append(signe("="), termeCalcul(cef === null ? "–" : formatNombre(cef, 1), "Cef " + REGLAGES.unite_cef, "resultat-calcul"));
+    const info = REGLAGES.poste_cef_information;
+    const mobilier = postes[info.cle] ?? null;
+    if (mobilier !== null) {
+      formule.append(termeCalcul(formatNombre(mobilier, 1), info.libelle + " (hors Cef, pour information)", "terme-information"));
+    }
+    ligne.append(formule);
+    const somme = valeurs.reduce((s, v) => s + (v || 0), 0);
+    if (cef !== null && Math.abs(somme - cef) > REGLAGES.tolerance_cef) {
+      ligne.append(creer("p", "ecart-calcul",
+        `La somme des postes donne ${formatNombre(somme, 1)}, soit ${formatSigne(somme - cef, 1)}${ESP}${REGLAGES.unite_cef} par rapport au Cef du RSET.`));
+    }
+    return ligne;
+  }
+
+  // Section Cef d'un ou plusieurs nœuds : entrees [{ indicateurs, titre }] ; absente sans données
+  function sectionCef(entrees) {
+    const lignes = entrees.map((e) => ligneCef(e.indicateurs, e.titre)).filter(Boolean);
+    if (lignes.length === 0) return [];
+    const bloc = creer("div", "carte carte-calcul carte-cef");
+    bloc.append(...lignes, creer("p", "note",
+      `Consommations d'énergie finale par poste, en ${REGLAGES.unite_cef}, lues dans le RSET ; leur somme est le Cef. ` +
+      "Le mobilier (usages mobiliers) est hors du périmètre réglementaire : il est donné pour information et n'entre pas dans le Cef."));
+    return [section("Consommation d'énergie finale", bloc)];
+  }
+
   /* ---------- Risques ---------- */
 
   // Écarts à surveiller, du plus risqué au moins risqué. sources : [{ nom, indicateurs }]
@@ -468,6 +513,7 @@ const OngletIndicateurs = (() => {
           section("Écarts aux seuils", legendeFamilles(), legendeMarges(niveauxMarge("reglementaire")), tableauProjet(),
             creer("p", "note", "Écart = (valeur − seuil) / seuil ; valeur / seuil en dessous. DH : groupe le plus proche de son seuil. Détail en sélectionnant un bâtiment. Unités : Ic en " + UNITE_IC + ", Bbio en points, Cep et Cep,nr en kWhep/m²/an, DH en °C.h.")),
           section("Risques", listeRisques(liste, nbBat > 1, "reglementaire")),
+          ...sectionCef(batiments.map((b) => ({ indicateurs: b.indicateurs, titre: b.nom }))),
           section("Composition de l'Ic", ...compositions, creer("p", "note", NOTE_COMPOSITION))
         );
         break;
@@ -481,6 +527,8 @@ const OngletIndicateurs = (() => {
           section("Calcul des seuils", calculSeuils(entrees, false, noeud.zones.length > 1)),
           section("Risques", listeRisques(liste, false, "reglementaire")),
           section("Exigences réglementaires", legendeFamilles(), grilleExigences(evaluations, "reglementaire")),
+          ...sectionCef([{ indicateurs: noeud.indicateurs, titre: noeud.nom },
+            ...(noeud.zones.length > 1 ? noeud.zones.map((z) => ({ indicateurs: z.indicateurs, titre: z.nom })) : [])]),
           ...sectionInconfort(noeud),
           section("Composition de l'Ic", composition(noeud.indicateurs, false), creer("p", "note", NOTE_COMPOSITION))
         );
@@ -497,6 +545,7 @@ const OngletIndicateurs = (() => {
           section("Calcul des seuils", calculSeuils([{ zone: noeud, batiment: parent, titre: noeud.nom }], false, false)),
           section("Risques", listeRisques(liste, false, "information")),
           section("Valeurs de la zone", legendeFamilles(), grilleExigences(evaluations, "information")),
+          ...sectionCef([{ indicateurs: noeud.indicateurs, titre: noeud.nom }]),
           ...sectionInconfort(noeud),
           section("Composition de l'Ic", composition(noeud.indicateurs, true), creer("p", "note", NOTE_COMPOSITION))
         );

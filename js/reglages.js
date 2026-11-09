@@ -9,7 +9,7 @@
 
 const REGLAGES = {
   // Version affichée (doit rester identique au fichier VERSION)
-  version: "0.9.7",
+  version: "0.9.8",
 
   // Extensions acceptées à l'import
   extensions_acceptees: [".xml"],
@@ -56,6 +56,23 @@ const REGLAGES = {
   },
   symboles_statut: { conforme: "✓", depasse: "✕", absent: "–" },
 
+  // Consommation d'énergie finale (RSET, sorties C) : postes lus dans O_Cef_imp_<cle>_annuel.
+  // Leur somme est le Cef (O_Cef_annuel) ; le mobilier est hors Cef, affiché pour information.
+  postes_cef: [
+    { cle: "ch", libelle: "Chauffage" },
+    { cle: "fr", libelle: "Refroidissement" },
+    { cle: "ecs", libelle: "ECS" },
+    { cle: "ecl", libelle: "Éclairage" },
+    { cle: "auxvent", libelle: "Auxil. ventilation" },
+    { cle: "auxdist", libelle: "Auxil. distribution" },
+    { cle: "deplacement", libelle: "Déplacement" },
+  ],
+  poste_cef_information: { cle: "mobilier", libelle: "Mobilier" },
+  unite_cef: "kWhef/m²/an",
+  // Écart signalé entre la somme des postes et le Cef au-delà de cette valeur (kWhef/m²/an) :
+  // 7 postes arrondis au dixième peuvent s'écarter de 0,35 au plus
+  tolerance_cef: 0.4,
+
   // Somme de l'Ic signalée si l'écart dépasse la plus grande de ces tolérances (arrondis exclus)
   tolerance_somme: { absolue: 0.5, relative: 0.002 },
 
@@ -69,7 +86,7 @@ const REGLAGES = {
     zip: "Ce fichier est une archive compressée : décompressez-la puis ouvrez le fichier .xml qu'elle contient.",
     xml_invalide: "Ce fichier n'est pas un XML valide : il est peut-être tronqué ou corrompu.",
     racine: "Ce fichier XML n'est pas un RSEE : la racine <projet> est absente.",
-    rset_seul: "Ce fichier ne contient pas de partie environnementale (RSEnv) : c'est probablement un RSET, pas un RSEE.",
+    rset_seul: "Ce fichier ne contient ni partie environnementale (RSEnv) ni bâtiment décrit dans le RSET : il ne peut pas être lu.",
     rsenv_absent: "Partie environnementale (RSEnv) absente : ce fichier n'est pas un RSEE complet.",
     lecture: "Le fichier n'a pas pu être lu.",
   },

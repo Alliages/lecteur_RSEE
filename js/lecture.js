@@ -13,6 +13,8 @@
      RSEnv       ACV : entree_projet (composants, services, parcelle)
                        sortie_projet (indicateurs)
    Bâtiments et zones sont reliés entre blocs par leur index.
+   Un RSET seul (sans RSEnv) est aussi lu : bâtiments et zones viennent
+   alors de RSET/Entree_Projet, sans données environnementales.
    Les index de zone sont uniques pour tout le projet (1..n).
    ===================================================================== */
 
@@ -101,7 +103,8 @@ const LectureRSEE = (() => {
 
   /* ---------- Contrôle du format ---------- */
 
-  // Renvoie { doc } si le texte est un RSEE exploitable, sinon { erreur }
+  // Renvoie { doc } si le texte est un RSEE exploitable, { doc, rset_seul: true } pour un RSET
+  // seul (sans RSEnv) qui décrit au moins ses bâtiments, sinon { erreur }
   function controler(texteXml) {
     const M = REGLAGES.messages;
     const doc = new DOMParser().parseFromString(texteXml, "application/xml");
@@ -112,6 +115,9 @@ const LectureRSEE = (() => {
 
     const B = REGLAGES.blocs;
     if (!enfant(racine, B.environnement)) {
+      if (enfants(suivre(racine, B.energie + "/Entree_Projet/Batiment_Collection"), "Batiment").length) {
+        return { doc, rset_seul: true };
+      }
       return { erreur: enfant(racine, B.energie) ? M.rset_seul : M.rsenv_absent };
     }
     if (!suivre(racine, B.environnement + "/entree_projet")) return { erreur: M.rsenv_absent };
@@ -185,10 +191,44 @@ const LectureRSEE = (() => {
     return res;
   }
 
+  // Groupes décrits dans les entrées du RSET : { index de groupe: { zone, batiment } }
+  function groupesEntreeRSET(racine) {
+    const res = {};
+    const collection = suivre(racine, REGLAGES.blocs.energie + "/Entree_Projet/Batiment_Collection");
+    for (const b of enfants(collection, "Batiment")) {
+      for (const z of enfants(enfant(b, "Zone_Collection"), "Zone")) {
+        for (const g of enfants(enfant(z, "Groupe_Collection"), "Groupe")) {
+          res[texte(g, "Index")] = { zone: texte(z, "Index"), batiment: texte(b, "Index") };
+        }
+      }
+    }
+    return res;
+  }
+
+  // Un enregistrement DH d'un groupe (sortie D), rattaché à une zone et un bâtiment
+  function lireGroupeDH(g, batiment, zone, inconfort) {
+    const index = texte(g, "Index");
+    return {
+      index,
+      nom: texte(g, "Name") || "Groupe " + index,
+      batiment,
+      zone,
+      sref: nombre(g, "O_SREF"),
+      dh: nombre(g, "O_NbDegresHeures"),
+      dh_max: nombre(g, "O_NbDegresHeures_max"),
+      inconfort: inconfort.has(index),
+      // Heures où la température opérative dépasse la température d'inconfort (+0, +1, +2 °C)
+      nb_h_inconf: nombre(g, "O_Nb_h_inconf"),
+      nb_h_inconf_1: nombre(g, "O_Nb_h_inconf_1"),
+      nb_h_inconf_2: nombre(g, "O_Nb_h_inconf_2"),
+    };
+  }
+
   // Résultats thermiques du RSET : Bbio (sorties B), Cep et Cep,nr (sorties C)
   // par bâtiment et par zone ; DH par groupe (sorties D).
+  // alertes : rattachements de groupes à leur zone incertains ou impossibles.
   function indicateursRSET(racine) {
-    const res = { batiments: {}, zones: {}, groupes: [], modulations: {} };
+    const res = { batiments: {}, zones: {}, groupes: [], modulations: {}, alertes: [] };
     const sortie = suivre(racine, REGLAGES.blocs.energie + "/Sortie_Projet");
     const ajouter = (cible, index, valeurs) => {
       cible[index] = Object.assign(cible[index] || {}, valeurs);
@@ -200,6 +240,13 @@ const LectureRSEE = (() => {
       cep: "O_Cep_annuel", cep_max: "O_Cep_Max",
       cep_nr: "O_Cep_nr_annuel", cep_nr_max: "O_Cep_nr_Max",
       cep_occ: "O_Cep_annuel_occ",
+      cef: "O_Cef_annuel",
+    };
+    // Postes de consommation d'énergie finale (sorties C), mobilier compris : { cle: nombre | null }
+    const postesCef = (el) => {
+      const v = {};
+      for (const p of [...REGLAGES.postes_cef, REGLAGES.poste_cef_information]) v[p.cle] = nombre(el, `O_Cef_imp_${p.cle}_annuel`);
+      return v;
     };
     const lireChamps = (el, champs) => {
       const v = {};
@@ -211,10 +258,12 @@ const LectureRSEE = (() => {
       const batiments = enfants(enfant(sortie, `Sortie_Batiment_${lettre}_Collection`), `Sortie_Batiment_${lettre}`);
       for (const b of batiments) {
         ajouter(res.batiments, texte(b, "Index"), lireChamps(b, champs));
+        if (lettre === "C") ajouter(res.batiments, texte(b, "Index"), { cef_postes: postesCef(b) });
         const zones = enfants(enfant(b, `Sortie_Zone_${lettre}_Collection`), `Sortie_Zone_${lettre}`);
         for (const z of zones) {
           const iz = texte(z, "Index");
           ajouter(res.zones, iz, lireChamps(z, champs));
+          if (lettre === "C") ajouter(res.zones, iz, { cef_postes: postesCef(z) });
           // Coefficients de modulation et seuils de chaque groupe (O_Mb…, O_Mc…, O_…_Max)
           const modulation = (res.modulations[iz] = res.modulations[iz] || { bbio: [], cep: [] });
           for (const g of enfants(enfant(z, `Sortie_Groupe_${lettre}_Collection`), `Sortie_Groupe_${lettre}`)) {
@@ -224,34 +273,94 @@ const LectureRSEE = (() => {
       }
     }
 
-    // Groupes listés en inconfort d'été par le RSET
-    const inconfort = new Set(
-      enfants(enfant(sortie, "Groupe_Inconf_Collection"), "Sortie_Groupe_D").map((g) => texte(g, "Index"))
-    );
+    // Groupes listés en inconfort d'été par le RSET (liste à plat, sans la zone)
+    const groupesInconfort = enfants(enfant(sortie, "Groupe_Inconf_Collection"), "Sortie_Groupe_D");
+    const inconfort = new Set(groupesInconfort.map((g) => texte(g, "Index")));
+    const entree = groupesEntreeRSET(racine);
 
-    // DH : un enregistrement par groupe, rattaché à sa zone et à son bâtiment
+    // DH : un enregistrement par groupe, rattaché à la zone et au bâtiment qui le contiennent
+    // dans les sorties D. Un rattachement qui contredit les entrées du RSET est signalé.
     for (const b of enfants(enfant(sortie, "Sortie_Batiment_D_Collection"), "Sortie_Batiment_D")) {
       for (const z of enfants(enfant(b, "Sortie_Zone_D_Collection"), "Sortie_Zone_D")) {
         for (const g of enfants(enfant(z, "Sortie_Groupe_D_Collection"), "Sortie_Groupe_D")) {
-          const index = texte(g, "Index");
-          res.groupes.push({
-            index,
-            nom: texte(g, "Name") || "Groupe " + index,
-            batiment: texte(b, "Index"),
-            zone: texte(z, "Index"),
-            sref: nombre(g, "O_SREF"),
-            dh: nombre(g, "O_NbDegresHeures"),
-            dh_max: nombre(g, "O_NbDegresHeures_max"),
-            inconfort: inconfort.has(index),
-            // Heures où la température opérative dépasse la température d'inconfort (+0, +1, +2 °C)
-            nb_h_inconf: nombre(g, "O_Nb_h_inconf"),
-            nb_h_inconf_1: nombre(g, "O_Nb_h_inconf_1"),
-            nb_h_inconf_2: nombre(g, "O_Nb_h_inconf_2"),
-          });
+          const groupe = lireGroupeDH(g, texte(b, "Index"), texte(z, "Index"), inconfort);
+          const attendu = entree[groupe.index];
+          if (attendu && attendu.zone !== groupe.zone) {
+            res.alertes.push(
+              `Groupe ${groupe.index} (${groupe.nom}) : placé dans la zone ${groupe.zone} par les sorties du RSET, ` +
+              `mais dans la zone ${attendu.zone} par ses entrées. Rattachement à la zone ${groupe.zone} à vérifier.`
+            );
+          }
+          res.groupes.push(groupe);
         }
       }
     }
+
+    // Groupes en inconfort absents des sorties par zone : rattachés par les entrées du RSET
+    const lus = new Set(res.groupes.map((g) => g.index));
+    for (const g of groupesInconfort) {
+      const index = texte(g, "Index");
+      if (lus.has(index)) continue;
+      lus.add(index);
+      const attendu = entree[index];
+      const groupe = lireGroupeDH(g, attendu ? attendu.batiment : null, attendu ? attendu.zone : null, inconfort);
+      res.alertes.push(
+        attendu
+          ? `Groupe ${index} (${groupe.nom}) : absent des sorties par zone du RSET, rattaché à la zone ${attendu.zone} d'après ses entrées. À vérifier.`
+          : `Groupe ${index} (${groupe.nom}) : DH lus, mais le groupe n'a pu être rattaché à aucune zone.`
+      );
+      res.groupes.push(groupe);
+    }
     return res;
+  }
+
+  /* ---------- RSET seul : bâtiments et zones tirés du RSET ---------- */
+
+  // Une zone décrite dans les entrées du RSET, au format des zones RSEnv
+  // (sans composants ni services). Sref et usage : Datas_Comp, sinon RSET.
+  function lireZoneRSET(z, admin) {
+    const index = texte(z, "Index");
+    const info = admin.zones[index] || {};
+    const usage = info.usage || texte(z, "Usage");
+    const traversant = nombre(z, "Is_Traversant");
+    return {
+      type: "zone",
+      index,
+      nom: texte(z, "Name") || "Zone " + index,
+      sref: info.sref ?? null,
+      usage,
+      logement: REGLAGES.usages_logement.includes(usage),
+      traversant: traversant === null ? null : traversant === 1,
+      n_occ: nombre(z, "Nocc"),
+      nb_logement: nombre(z, "NB_logement"),
+      nb_composants: 0,
+      nb_services: 0,
+      refs_lots: [],
+      refs_sous_lots: [],
+      lignes: [],
+      origine: "RSET",
+    };
+  }
+
+  // Un bâtiment décrit dans les entrées du RSET, avec ses zones
+  function lireBatimentRSET(b, admin) {
+    const index = texte(b, "Index");
+    const zones = enfants(enfant(b, "Zone_Collection"), "Zone").map((z) => lireZoneRSET(z, admin));
+    const zonesLogement = zones.filter((z) => z.logement);
+    return {
+      type: "batiment",
+      index,
+      nom: texte(b, "Name") || "Bâtiment " + index,
+      sref: (admin.batiments[index] || {}).sref ?? null,
+      emprise_au_sol: null,
+      periode_reference: null,
+      duree_chantier: null,
+      nb_composants: 0,
+      nb_services: 0,
+      nb_logement: zonesLogement.length ? zonesLogement.reduce((s, z) => s + (z.nb_logement || 0), 0) : null,
+      zones,
+      origine: "RSET",
+    };
   }
 
   // Données d'entrée du RSET utiles au lien vers l'outil Seuils, par index de zone
@@ -458,8 +567,9 @@ const LectureRSEE = (() => {
       commune: texte(generales, "operation/adresse/city"),
       date_etude: texte(rsenv, "entree_projet/date_etude"),
       logiciels: Array.from(new Set(logiciels)),
-      version_rsenv: rsenv.getAttribute("version"),
-      phase: rsenv.getAttribute("phase"),
+      // null pour un RSET seul
+      version_rsenv: rsenv ? rsenv.getAttribute("version") : null,
+      phase: rsenv ? rsenv.getAttribute("phase") : null,
       version_datas_comp: enfant(racine, B.administratif)?.getAttribute("version") || null,
       version_rset: texte(racine, B.energie + "/Entree_Projet/Version"),
     };
@@ -545,20 +655,30 @@ const LectureRSEE = (() => {
     return alertes;
   }
 
-  // Point d'entrée : texte XML -> { modele } ou { erreur }
+  // Point d'entrée : texte XML -> { modele } ou { erreur }.
+  // Un RSET seul (sans RSEnv) donne le même modèle, bâtiments et zones tirés du RSET,
+  // sans composants, services, parcelles ni indicateurs environnementaux (modele.rset_seul).
   function analyser(texteXml, nomFichier) {
     const controle = controler(texteXml);
     if (controle.erreur) return controle;
 
     const racine = controle.doc.documentElement;
+    const rsetSeul = Boolean(controle.rset_seul);
     const entree = suivre(racine, REGLAGES.blocs.environnement + "/entree_projet");
     const noms = nomsRSET(racine);
+    const admin = informationsBatiments(racine);
+    const batimentsRSET = enfants(suivre(racine, REGLAGES.blocs.energie + "/Entree_Projet/Batiment_Collection"), "Batiment");
 
     const modele = {
       fichier: nomFichier,
+      rset_seul: rsetSeul,
+      // Nature du fichier lu : RSEE (RSET + RSEnv), RSET seul ou RSEnv seul
+      type_fichier: rsetSeul ? "RSET" : enfant(racine, REGLAGES.blocs.energie) ? "RSEE" : "RSEnv",
       projet: lireProjet(racine, nomFichier),
       informations: lireInformations(racine),
-      batiments: enfants(entree, "batiment").map((b) => lireBatiment(b, noms)),
+      batiments: rsetSeul
+        ? batimentsRSET.map((b) => lireBatimentRSET(b, admin))
+        : enfants(entree, "batiment").map((b) => lireBatiment(b, noms)),
       parcelles: enfants(entree, "parcelle").map(lireParcelle),
     };
 
@@ -566,7 +686,6 @@ const LectureRSEE = (() => {
     // rattachés aux bâtiments et aux zones par leur index
     const envi = indicateursRSEnv(racine);
     const thermique = indicateursRSET(racine);
-    const admin = informationsBatiments(racine);
     const entreesSeuils = parametresSeuils(racine);
     const ascenseurs = ascenseursRSET(racine);
     const alertesIndicateurs = [];
@@ -579,7 +698,7 @@ const LectureRSEE = (() => {
         thermique.batiments[b.index],
         thermique.groupes.filter((g) => g.batiment === b.index)
       );
-      if (!(b.index in envi.batiments)) alertesIndicateurs.push(`Bâtiment ${b.index} : indicateurs environnementaux absents.`);
+      if (!rsetSeul && !(b.index in envi.batiments)) alertesIndicateurs.push(`Bâtiment ${b.index} : indicateurs environnementaux absents.`);
       if (!(b.index in thermique.batiments)) alertesIndicateurs.push(`Bâtiment ${b.index} : résultats Bbio / Cep absents du RSET.`);
       for (const z of b.zones) {
         z.informations = admin.zones[z.index] || {};
@@ -595,7 +714,31 @@ const LectureRSEE = (() => {
       }
     }
 
-    modele.alertes = controlerCoherence(modele, noms).concat(alertesIndicateurs);
+    // Groupes DH qu'aucune zone affichée ne reçoit (zone absente du modèle)
+    const zonesLues = new Set(modele.batiments.flatMap((b) => b.zones.map((z) => z.index)));
+    for (const g of thermique.groupes) {
+      if (g.zone !== null && !zonesLues.has(g.zone)) {
+        alertesIndicateurs.push(`Groupe ${g.index} (${g.nom}) : rattaché à la zone ${g.zone}, absente du fichier ; ses DH ne sont pas affichés.`);
+      }
+    }
+
+    // RSET seul : la lecture est partielle, et le rattachement des groupes aux zones vient du seul RSET
+    const alertesRSET = [];
+    if (rsetSeul) {
+      alertesRSET.push(
+        "RSET seul (pas de partie environnementale RSEnv) : bâtiments et zones lus dans le RSET ; " +
+        "Ic, composants, services et parcelle absents."
+      );
+      if (thermique.groupes.length) {
+        const nomZone = (iz) => (iz in noms.zones ? `zone ${iz} (${noms.zones[iz]})` : `zone ${iz}`);
+        alertesRSET.push(
+          "Groupes DH rattachés aux zones d'après la structure du RSET, à vérifier : " +
+          thermique.groupes.map((g) => `groupe ${g.index} (${g.nom}) → ${g.zone === null ? "aucune zone" : nomZone(g.zone)}`).join(" ; ") + "."
+        );
+      }
+    }
+
+    modele.alertes = alertesRSET.concat(controlerCoherence(modele, noms), thermique.alertes, alertesIndicateurs);
     return { modele };
   }
 

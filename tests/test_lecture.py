@@ -8,7 +8,8 @@ Ouvre index.html dans un navigateur sans fenêtre (Playwright) et vérifie :
      (indicateurs, verdicts, informations, lignes de composants et services,
      regroupement par bâtiment, impacts par lot, filtres et tri),
      puis l'affichage des 5 onglets avec captures ;
-  4. les messages d'erreur (fichier non XML, XML non RSEE, RSET seul, zip,
+  4. la lecture d'un RSET seul (RSEE privé de son RSEnv) : zones et DH ;
+  5. les messages d'erreur (fichier non XML, XML non RSEE, RSET vide, zip,
      mauvaise extension).
 
 Les RSEE de test ne sont jamais versionnés (voir .gitignore).
@@ -28,7 +29,7 @@ from urllib.parse import unquote
 
 from playwright.sync_api import sync_playwright
 
-from reference import graphiques_reference, reference
+from reference import graphiques_reference, indicateurs_reference, reference
 
 # --- Réglages des tests ---
 RACINE = Path(__file__).resolve().parent.parent
@@ -359,8 +360,21 @@ def main():
                 for g, cellules in zip(groupes_b, lignes_h):
                     for cle, texte_h in zip(("nb_h_inconf", "nb_h_inconf_1", "nb_h_inconf_2"), cellules[1:]):
                         verifier(lire_nombre(texte_h) == g[cle], f"{chemin.name} : {cle} du groupe {g['index']} = {texte_h}")
-                # Composition : les sommes du schéma tombent juste
+                # Consommation d'énergie finale : 7 postes = Cef, mobilier à part ; écart signalé seulement au-delà des arrondis
                 ind = b["indicateurs"]
+                postes = ind.get("cef_postes") or {}
+                if ind.get("cef") is not None:
+                    termes_cef = page.eval_on_selector_all(".ligne-cef >> nth=0 >> .terme-calcul",
+                        "l => l.map(t => [t.querySelector('.valeur-terme').textContent, t.className])")
+                    attendus_cef = [postes.get(c) for c in ("ch", "fr", "ecs", "ecl", "auxvent", "auxdist", "deplacement")] + [ind["cef"]]
+                    lus_cef = [None if v == "–" else lire_nombre(v) for v, _ in termes_cef[:8]]
+                    verifier(lus_cef == [None if v is None else round(v, 1) for v in attendus_cef], f"{chemin.name} bâtiment {b['index']} : Cef {lus_cef}")
+                    if postes.get("mobilier") is not None:
+                        verifier(len(termes_cef) == 9 and "terme-information" in termes_cef[8][1], f"{chemin.name} bâtiment {b['index']} : mobilier pour information")
+                    somme_cef = sum(v or 0 for v in attendus_cef[:7])
+                    verifier((page.locator(".ligne-cef >> nth=0 >> .ecart-calcul").count() == 1) == (abs(somme_cef - ind["cef"]) > 0.4),
+                             f"{chemin.name} bâtiment {b['index']} : écart du Cef ({somme_cef:.2f} / {ind['cef']})")
+                # Composition : les sommes du schéma tombent juste
                 verifier(page.locator(".bloc-ic").count() == 4, f"{chemin.name} bâtiment {b['index']} : blocs de la composition")
                 verifier(page.locator(".plus-bloc").count() == 2, f"{chemin.name} bâtiment {b['index']} : signes + de la composition")
                 for total, termes in (("ic_construction", ("ic_composant", "ic_chantier")),
@@ -630,6 +644,54 @@ def main():
             verifier(all(l[1] == "–" and l[2] == "–" for l in lire_ic_lots(page)), "sans phases : une valeur est affichée")
             page.click("[data-onglet=synthese]")
 
+        print("3 quinquies. RSET seul : bâtiments, zones et DH lus dans le RSET")
+        with tempfile.TemporaryDirectory() as tmp:
+            for chemin in rsee:
+                arbre = ET.parse(chemin)
+                racine_xml = arbre.getroot()
+                if racine_xml.find("RSET/Entree_Projet/Batiment_Collection/Batiment") is None:
+                    continue
+                _, _, groupes_ref = indicateurs_reference(racine_xml)
+                racine_xml.remove(racine_xml.find("RSEnv"))
+                fichier = Path(tmp) / ("rset_" + chemin.name)
+                print(" -", fichier.name)
+                arbre.write(fichier, encoding="utf-8", xml_declaration=True)
+                ouvrir_rsee(page, fichier)
+                m = page.evaluate("""() => ({ rset: Etat.modele.rset_seul, alertes: Etat.modele.alertes,
+                    zones_rset: [...Etat.modele.batiments.flatMap(b => b.zones.map(z => z.index))],
+                    groupes: Etat.modele.batiments.flatMap(b => b.zones.flatMap(z => z.indicateurs.groupes_dh.map(g =>
+                        ({ index: g.index, batiment: g.batiment, zone: g.zone, dh: g.dh, dh_max: g.dh_max })))) })""")
+                verifier(m["rset"] is True, f"{chemin.name} sans RSEnv : non reconnu comme RSET seul")
+                verifier(page.inner_text("#info-fichier").startswith("RSET · "), f"{chemin.name} sans RSEnv : type absent de la ligne du fichier")
+                verifier(page.text_content("#titre-arbre") == "Arborescence du RSET", f"{chemin.name} sans RSEnv : titre de l'arborescence")
+                zones_entree = [z.findtext("Index") for z in racine_xml.findall("RSET/Entree_Projet/Batiment_Collection/Batiment/Zone_Collection/Zone")]
+                verifier(m["zones_rset"] == zones_entree, f"{chemin.name} sans RSEnv : zones {m['zones_rset']} au lieu de {zones_entree}")
+                attendus = [{k: g[k] for k in ("index", "batiment", "zone", "dh", "dh_max")} for g in groupes_ref if g["zone"] in zones_entree]
+                comparer(m["groupes"], attendus, f"{chemin.name} sans RSEnv : groupes DH")
+                verifier(any(a.startswith("RSET seul") for a in m["alertes"]), f"{chemin.name} sans RSEnv : alerte RSET seul absente")
+                if groupes_ref:
+                    verifier(any("rattachés aux zones" in a for a in m["alertes"]), f"{chemin.name} sans RSEnv : alerte de rattachement absente")
+                for onglet in ("synthese", "informations", "indicateurs", "composants", "graphiques"):
+                    page.click(f"[data-onglet={onglet}]")
+                    for k in range(page.locator(".noeud").count()):
+                        page.locator(".noeud").nth(k).click()
+                page.click("[data-onglet=synthese]")
+                page.locator(".noeud[data-type=projet]").click()
+            page.screenshot(path=str(DOSSIER_CAPTURES / "_rset_seul.png"), full_page=True)
+
+            # RSEE complet, puis RSEnv seul (RSEE privé de son RSET) : type annoncé
+            ouvrir_rsee(page, rsee[0])
+            verifier(page.inner_text("#info-fichier").startswith("RSEE · "), "RSEE : type absent de la ligne du fichier")
+            verifier(page.text_content("#titre-arbre") == "Arborescence du RSEE", "RSEE : titre de l'arborescence")
+            arbre = ET.parse(rsee[0])
+            arbre.getroot().remove(arbre.getroot().find("RSET"))
+            fichier = Path(tmp) / "rsenv_seul.xml"
+            arbre.write(fichier, encoding="utf-8", xml_declaration=True)
+            ouvrir_rsee(page, fichier)
+            verifier(page.evaluate("Etat.modele.type_fichier") == "RSEnv", "RSEnv seul : type du fichier")
+            verifier(page.inner_text("#info-fichier").startswith("RSEnv · "), "RSEnv seul : type absent de la ligne du fichier")
+            verifier(page.text_content("#titre-arbre") == "Arborescence du RSEnv", "RSEnv seul : titre de l'arborescence")
+
         print("4. Messages d'erreur")
         msg = page.evaluate("REGLAGES.messages")
         with tempfile.TemporaryDirectory() as tmp:
@@ -652,6 +714,7 @@ def main():
                 verifier(page.inner_text("#message") == attendu, f"{nom} : message inattendu")
                 verifier(page.locator(".noeud").count() == 0, f"{nom} : arborescence non vidée")
                 verifier("Lecture locale" in page.inner_text("#info-fichier"), f"{nom} : ancien fichier encore affiché")
+                verifier(page.text_content("#titre-arbre") == "Arborescence", f"{nom} : titre de l'arborescence non réinitialisé")
             page.screenshot(path=str(DOSSIER_CAPTURES / "_erreur.png"))
 
         # Capture en largeur téléphone

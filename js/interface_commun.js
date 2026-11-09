@@ -56,6 +56,7 @@ const Commun = (() => {
     boutonOuvrir: document.getElementById("bouton-ouvrir"),
     selecteur: document.getElementById("selecteur"),
     infoFichier: document.getElementById("info-fichier"),
+    titreArbre: document.getElementById("titre-arbre"),
     message: document.getElementById("message"),
     arbre: document.getElementById("arbre"),
     detail: document.getElementById("detail"),

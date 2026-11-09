@@ -807,6 +807,8 @@ th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
 .nom-terme { font-size: 11px; color: var(--texte-doux); }
 .resultat-calcul { background: var(--orchidee); color: #fff; }
 .resultat-calcul .nom-terme { color: #fff; }
+/* Terme donné pour information, hors de la somme (mobilier du Cef) */
+.terme-information { margin-left: 12px; background: transparent; border: 1.5px dashed var(--texte-doux); }
 .ecart-calcul { grid-column: 2; margin: 2px 0 0; font-size: 13px; font-weight: 700; color: #b3362a; }
 .lien-outil {
   display: inline-block;

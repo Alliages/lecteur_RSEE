@@ -65,11 +65,20 @@ def indicateurs_reference(racine):
         bat.setdefault(texte(b, "Index"), {}).update(bbio=nombre(b, "O_Bbio_pts_annuel"), bbio_max=nombre(b, "O_Bbio_Max"))
         for z in b.findall("Sortie_Zone_B_Collection/Sortie_Zone_B"):
             zon.setdefault(texte(z, "Index"), {}).update(bbio=nombre(z, "O_Bbio_pts_annuel"), bbio_max=nombre(z, "O_Bbio_Max"))
-    champs_c = {"cep": "O_Cep_annuel", "cep_max": "O_Cep_Max", "cep_nr": "O_Cep_nr_annuel", "cep_nr_max": "O_Cep_nr_Max"}
+    champs_c = {"cep": "O_Cep_annuel", "cep_max": "O_Cep_Max", "cep_nr": "O_Cep_nr_annuel", "cep_nr_max": "O_Cep_nr_Max",
+                "cef": "O_Cef_annuel"}
+    # Postes d'énergie finale (mobilier compris, hors Cef)
+    postes_cef = ("ch", "fr", "ecs", "ecl", "auxvent", "auxdist", "deplacement", "mobilier")
+
+    def valeurs_c(e):
+        v = {k: nombre(e, b) for k, b in champs_c.items()}
+        v["cef_postes"] = {p: nombre(e, f"O_Cef_imp_{p}_annuel") for p in postes_cef}
+        return v
+
     for b in racine.findall(sortie + "Sortie_Batiment_C_Collection/Sortie_Batiment_C"):
-        bat.setdefault(texte(b, "Index"), {}).update({k: nombre(b, v) for k, v in champs_c.items()})
+        bat.setdefault(texte(b, "Index"), {}).update(valeurs_c(b))
         for z in b.findall("Sortie_Zone_C_Collection/Sortie_Zone_C"):
-            zon.setdefault(texte(z, "Index"), {}).update({k: nombre(z, v) for k, v in champs_c.items()})
+            zon.setdefault(texte(z, "Index"), {}).update(valeurs_c(z))
 
     inconfort = {texte(g, "Index") for g in racine.findall(sortie + "Groupe_Inconf_Collection/Sortie_Groupe_D")}
     groupes = []
