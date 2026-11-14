@@ -109,6 +109,9 @@ button { font: inherit; color: inherit; }
 .logo-marque { width: 54px; height: auto; flex: none; }
 .logo .point { color: var(--corail); }
 .logo .accent { color: var(--orchidee); }
+/* Petit logo du HUB après le titre (lien vers la page du HUB) */
+.logo-hub-entete { display: flex; flex: none; margin-left: 6px; }
+.logo-hub-entete img { height: 40px; width: auto; }
 
 .onglets { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
 .onglet {
@@ -983,6 +986,7 @@ th[aria-sort="descending"] .tri::after { content: " ↓"; opacity: 1; }
   .entete { padding: 14px 16px; gap: 12px; }
   .logo { font-size: 26px; }
   .logo-marque { width: 44px; }
+  .logo-hub-entete img { height: 34px; }
   .onglets { margin-left: 0; width: 100%; order: 3; gap: 2px; }
   .onglet { padding: 4px 12px; font-size: 15px; }
   .colonnes, .colonnes.vue-large { grid-template-columns: 1fr; }

@@ -1,5 +1,10 @@
 # CHANGELOG — lecteur_RSEE
 
+## 0.9.9 — 2026-11-14
+
+- En-tête : petit logo du HUB des prescripteurs bas carbone juste après le titre, avec lien vers la
+  page du HUB sur le site de l'IFPEB (`images/HUB-BC_logo.png`, déjà utilisé dans les graphiques).
+
 ## 0.9.8 — 2026-11-09
 
 - Lecture d'un RSET seul (XML sans partie environnementale RSEnv), sans changer l'affichage :
